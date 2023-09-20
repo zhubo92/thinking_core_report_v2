@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { getToken } from "@/utils/storage";
 import { showToast } from "vant";
-import "vant/es/toast/style";
 
 interface CustomAxiosInstance extends AxiosInstance {
   <T>(config: AxiosRequestConfig): Promise<{

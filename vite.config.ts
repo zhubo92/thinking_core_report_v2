@@ -1,6 +1,6 @@
-import {defineConfig} from "vite";
+import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import {resolve} from "path";
+import { resolve } from "path";
 
 // https://vitejs.dev/config/
 
@@ -13,12 +13,45 @@ const alias: Record<string, string> = {
 };
 export default defineConfig({
   plugins: [vue()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        /**
+         * 单行溢出隐藏 @include single-hide();
+         *
+         * 多行溢出隐藏 @include multi-hide(3);
+         *
+         * flex布局垂直水平居中 @include flex-center();
+         *
+         */
+        additionalData: `
+          @mixin flex-center() {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+          @mixin single-hide() {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+          @mixin multi-hide($num) {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: $num;
+          }
+        `,
+      },
+    },
+  },
   server: {
     host: true,
     port: 9898,
     proxy: {
       "/zd-api": {
-        target: "https://open.test.luojigou.vip",
+        target: "https://open.api.luojigou.vip",
+        // target: "https://open.test.luojigou.vip",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/zd-api/, ""),
       },

@@ -7,3 +7,18 @@
   font-family: 'YouSheBiaoTiHei-Bold';
   src: url(unquote('@/assets/fonts/YouSheBiaoTiHei-Bold.ttf')) format('truetype');
 }
+
+@font-face {
+  font-family: 'YouSheBiaoTiYuan';
+  src: url(unquote('@/assets/fonts/YouSheBiaoTiYuan.otf')) format('opentype');
+}
+
+@font-face {
+  font-family: 'YouSheBiaoTiYuan-Regular';
+  src: url(unquote('@/assets/fonts/YouSheBiaoTiYuan.otf')) format('opentype');
+}
+
+@font-face {
+  font-family: 'PingFang SC-Regular';
+  src: url(unquote('@/assets/fonts/PingFang-SC-Regular.ttf')) format('truetype');
+}

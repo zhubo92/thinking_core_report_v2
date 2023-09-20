@@ -4,22 +4,22 @@ import { IReport } from "@/types/report";
 /**
  * 获取单次测评报告
  */
-export function getSingleReportRequest(data: any) {
+export function getSingleReportRequest(params: any) {
   return request<IReport>({
     url: `/teach/thought/valuation/report/single`,
     method: "GET",
-    data,
+    params,
   });
 }
 
 /**
  * 获取综合测评报告
  */
-export function getSemesterReportRequest(data: any) {
+export function getSemesterReportRequest(params: any) {
   return request<IReport>({
     url: `/teach/thought/valuation/report/semester`,
     method: "GET",
-    data,
+    params,
   });
 }
 

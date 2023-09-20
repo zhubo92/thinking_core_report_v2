@@ -1,32 +1,12 @@
 <script setup lang="ts">
-/**
- * 封面页：CoverPage
- * 报告页：{
- *   综合发展情况：{
- *      标题：ComplexTitle
- *      雷达图：RadarChart
- *      评估技能：AssessmentSkills
- *   }
- *   各个区域：{
- *      孩子信息：BabyInfo
- *      区域名称：DistrictName
- *      活动信息：ActivityInfo （活动名称、活动目的、核心观察能力）
- *      幼儿行为表现：ChildrenBehavior
- *      高阶问题情境卡：QuestionPart （高阶问题情境、幼儿问题记录）
- *      家园共育策略：FamilyStrategy
- *   }
- *   综合发展评估：{
- *     标题：ComplexTitle
- *     领域：ComplexItem
- *   }
- * }
- */
-import CoverPage from "@/views/report/cover/CoverPage.vue";
 import { useRoute } from "vue-router";
 import { useReportStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, ref, watch } from "vue";
-import { SwipeInstance } from "vant";
+import { SwipeInstance, Swipe, SwipeItem } from "vant";
+import TurnPage from "@/views/report/components/TurnPage.vue";
+import CoverPage from "@/views/report/components/CoverPage.vue";
+import HeaderPart from "@/views/report/components/HeaderPart.vue";
 
 const { babyId: _babyId, recordId: _recordId, type: _type } = useRoute().query;
 
@@ -71,12 +51,43 @@ onMounted(() => {
   init();
   getReport();
 });
+
+/**
+ * 封面页：CoverPage
+ * 报告页：{
+ *   综合发展情况：{
+ *      标题：ComplexTitle
+ *      雷达图：RadarChart
+ *      评估技能：AssessmentSkills
+ *   }
+ *   各个区域：{
+ *      孩子信息：BabyInfo
+ *      区域名称：DistrictName
+ *      活动信息：ActivityInfo （活动名称、活动目的、核心观察能力）
+ *      幼儿行为表现：ChildrenBehavior
+ *      高阶问题情境卡：QuestionPart （高阶问题情境、幼儿问题记录）
+ *      家园共育策略：FamilyStrategy
+ *   }
+ *   综合发展评估：{
+ *     标题：ComplexTitle
+ *     领域：ComplexItem
+ *   }
+ * }
+ */
 </script>
 
 <template>
   <CoverPage v-if="showCover" :info="babyInfo" @start="start" />
   <div v-else class="report">
-    <Swipe ref="swipeRef" vertical class="sp" :loop="false" :touchable="false">
+    <HeaderPart />
+    <Swipe
+      ref="swipeRef"
+      class="sp"
+      vertical
+      :loop="false"
+      :touchable="false"
+      :show-indicators="false"
+    >
       <SwipeItem v-for="page in pageList" :key="page.id" class="sp-item">
         <div class="report-item">
           <Component
@@ -87,13 +98,44 @@ onMounted(() => {
           />
         </div>
       </SwipeItem>
-      <template v-if="totalPage > 0" #indicator>
-        <div class="sp-indicator">{{ currentPage }}/{{ totalPage }}</div>
-      </template>
     </Swipe>
 
     <TurnPage :show-down="showDown" :show-up="showUp" @turn="changeSwipe" />
+
+    <div v-if="totalPage > 0" class="indicator">
+      {{ currentPage }}/{{ totalPage }}
+    </div>
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.report {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.sp {
+  width: 100vw;
+  height: calc(100vh - 90px);
+
+  &-item {
+    padding-bottom: 32px;
+    width: 100vw;
+    min-height: calc(100vh - 90px);
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+}
+
+.indicator {
+  position: fixed;
+  right: 17px;
+  bottom: 10px;
+  padding: 2px 5px;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.1);
+}
+</style>

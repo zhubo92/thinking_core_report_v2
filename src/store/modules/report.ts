@@ -8,12 +8,16 @@ import {
   IDomain,
   IPage,
   IRadarMap,
+  IStory,
 } from "@/types/report.d";
-import { useRoute } from "vue-router";
 import {
   getSemesterReportRequest,
   getSingleReportRequest,
-} from "@/api/report.ts";
+  sendToParentSemesterRequest,
+  sendToParentSingleRequest,
+} from "@/api/report";
+import { noticeApp } from "@/utils";
+import { showToast } from "vant";
 
 const BabyInfo = markRaw(
   defineAsyncComponent(() => import("@/views/report/district/BabyInfo.vue")),
@@ -58,6 +62,7 @@ const AssessmentSkills = markRaw(
   ),
 );
 export default defineStore("report", () => {
+  const isSendToParent = ref<boolean>(false);
   const isSingle = ref<boolean>(true);
   const isTeacher = ref<boolean>(true);
   const babyId = ref<string>("");
@@ -71,7 +76,6 @@ export default defineStore("report", () => {
     sendNumber: 0,
     valuationType: "",
   });
-
   const districtList = ref<IDistrict[]>([]);
   const domainList = ref<IDomain[]>([]);
   const radarMapList = ref<IRadarMap[]>([]);
@@ -100,97 +104,97 @@ export default defineStore("report", () => {
     return "";
   }
 
-  function createDomain(item: IDistrictData) {
-    const {
-      abilityLevelDes,
-      domainName,
-      domainAbilityName,
-      abilityName,
-      abilityLevelName,
-    } = item as IDistrictData;
-
-    if (!item.story) {
-      item.story = {
-        content: null,
-        description: null,
-        images: null,
-        questions: null,
-        videos: null,
-      };
-    }
-
-    const { content, videos, images } = item.story;
-    const { behave } = abilityLevelDes;
-
-    interface Domain {
-      isEmpty: boolean;
-      behave: null | string;
-      domainName: null | string;
-      domainAbilityName: null | string;
-      content: null | string;
-      abilityName: null | string;
-      abilityLevelName: null | string;
-      videos: null | string[];
-      images: null | string[];
-    }
-
-    const domain: Domain = {
-      isEmpty: true,
-      behave: null,
-      domainName: null,
-      domainAbilityName: null,
-      content: null,
-      abilityName: null,
-      abilityLevelName: null,
-      videos: null,
-      images: null,
-    };
-
-    if (domainName) {
-      domain.domainName = domainName;
-      domain.isEmpty = false;
-    }
-
-    if (domainAbilityName) {
-      domain.domainAbilityName = formatDomainAbilityName(domainAbilityName);
-      domain.isEmpty = false;
-    }
-
-    if (behave) {
-      domain.behave = behave;
-      domain.isEmpty = false;
-    }
-
-    if (content) {
-      domain.content = content;
-      domain.isEmpty = false;
-    }
-
-    if (abilityName) {
-      domain.abilityName = abilityName;
-      domain.isEmpty = false;
-    }
-
-    if (abilityLevelName) {
-      domain.abilityLevelName = abilityLevelName;
-      domain.isEmpty = false;
-    }
-
-    if (videos) {
-      domain.videos = videos;
-      domain.isEmpty = false;
-    }
-
-    if (images) {
-      domain.images = images;
-      domain.isEmpty = false;
-    }
-
-    if (!domain.isEmpty) {
-      addComponentIfExist(DomainAbility, domain);
-      // console.log(domain, 'domain')
-    }
-  }
+  // function createDomain(item: IDistrictData) {
+  //   const {
+  //     abilityLevelDes,
+  //     domainName,
+  //     domainAbilityName,
+  //     abilityName,
+  //     abilityLevelName,
+  //   } = item as IDistrictData;
+  //
+  //   if (!item.story) {
+  //     item.story = {
+  //       content: null,
+  //       description: null,
+  //       images: null,
+  //       questions: null,
+  //       videos: null,
+  //     };
+  //   }
+  //
+  //   const { content, videos, images } = item.story;
+  //   const { behave } = abilityLevelDes;
+  //
+  //   interface Domain {
+  //     isEmpty: boolean;
+  //     behave: null | string;
+  //     domainName: null | string;
+  //     domainAbilityName: null | string;
+  //     content: null | string;
+  //     abilityName: null | string;
+  //     abilityLevelName: null | string;
+  //     videos: null | string[];
+  //     images: null | string[];
+  //   }
+  //
+  //   const domain: Domain = {
+  //     isEmpty: true,
+  //     behave: null,
+  //     domainName: null,
+  //     domainAbilityName: null,
+  //     content: null,
+  //     abilityName: null,
+  //     abilityLevelName: null,
+  //     videos: null,
+  //     images: null,
+  //   };
+  //
+  //   if (domainName) {
+  //     domain.domainName = domainName;
+  //     domain.isEmpty = false;
+  //   }
+  //
+  //   if (domainAbilityName) {
+  //     domain.domainAbilityName = formatDomainAbilityName(domainAbilityName);
+  //     domain.isEmpty = false;
+  //   }
+  //
+  //   if (behave) {
+  //     domain.behave = behave;
+  //     domain.isEmpty = false;
+  //   }
+  //
+  //   if (content) {
+  //     domain.content = content;
+  //     domain.isEmpty = false;
+  //   }
+  //
+  //   if (abilityName) {
+  //     domain.abilityName = abilityName;
+  //     domain.isEmpty = false;
+  //   }
+  //
+  //   if (abilityLevelName) {
+  //     domain.abilityLevelName = abilityLevelName;
+  //     domain.isEmpty = false;
+  //   }
+  //
+  //   if (videos) {
+  //     domain.videos = videos;
+  //     domain.isEmpty = false;
+  //   }
+  //
+  //   if (images) {
+  //     domain.images = images;
+  //     domain.isEmpty = false;
+  //   }
+  //
+  //   if (!domain.isEmpty) {
+  //     addComponentIfExist(DomainAbility, domain);
+  //     // console.log(domain, 'domain')
+  //   }
+  // }
 
   function createQuestion(item: IDistrictData) {
     const { questionCardUrl, questionCardUrlList } = item;
@@ -285,7 +289,7 @@ export default defineStore("report", () => {
     }
 
     // 区域分页
-    districtList.value.map((district) => {
+    districtList.value?.map((district) => {
       district.dataList.map((item) => {
         const {
           subtitle,
@@ -294,18 +298,33 @@ export default defineStore("report", () => {
           activityName,
           activityDescription,
           abilityLevelDes,
+          domainName,
+          domainAbilityName,
+          // abilityName,
+          abilityLevelName,
+          story,
         } = item;
-        const { education } = abilityLevelDes;
+        const { education, behave } = abilityLevelDes;
+        const { images, videos } = story as IStory;
 
         addComponentIfExist(DistrictName, { districtName, subtitle, slogan });
 
         addComponentIfExist(ActivityInfo, {
           activityName,
           activityDescription,
-          abilityLevelDes,
+          domainName,
+          domainAbilityName: formatDomainAbilityName(domainAbilityName),
+          districtName,
         });
 
-        createDomain(item);
+        addComponentIfExist(ChildrenBehavior, {
+          behave,
+          images,
+          videos,
+          // abilityName,
+          abilityLevelName,
+        });
+
         createQuestion(item);
 
         addComponentIfExist(FamilyStrategy, education);
@@ -320,7 +339,7 @@ export default defineStore("report", () => {
         id: getId(),
         view: ComplexTitle,
       });
-      domainList.value.map((item) => {
+      domainList.value?.map((item) => {
         addComponentIfExist(ComplexItem, item);
       });
 
@@ -339,14 +358,36 @@ export default defineStore("report", () => {
     });
 
     if (status === 200) {
-      babyInfo.value = data.babyInfo;
-      districtList.value = data.districtList;
-      domainList.value = data.domainList;
-      radarMapList.value = data.radarMapList;
+      babyInfo.value = data?.babyInfo;
+      districtList.value = data?.districtList;
+      domainList.value = data?.domainList;
+      radarMapList.value = data?.radarMapList;
 
       createComponent();
 
-      console.log(JSON.parse(JSON.stringify(pageList)), "pageList");
+      console.log(JSON.parse(JSON.stringify(pageList.value)), "pageList");
+      console.log(JSON.parse(JSON.stringify(babyInfo.value)), "babyInfo");
+    }
+  }
+
+  async function sendToParent() {
+    if (isSendToParent.value) return;
+    isSendToParent.value = true;
+    const params = [
+      {
+        babyId: babyId.value,
+        recordId: recordId.value,
+        parentId: babyInfo.value.parentId,
+        valuationType: babyInfo.value.valuationType,
+      },
+    ];
+    const request = isSingle.value
+      ? sendToParentSingleRequest
+      : sendToParentSemesterRequest;
+    const { status } = await request(params);
+    if (status === 200) {
+      noticeApp(babyId.value, recordId.value);
+      showToast("发送成功");
     }
   }
 
@@ -361,5 +402,6 @@ export default defineStore("report", () => {
     totalPage,
 
     getReport,
+    sendToParent,
   };
 });

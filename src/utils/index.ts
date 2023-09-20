@@ -1,20 +1,74 @@
 // import html2canvas from 'html2canvas';
-
+import { showImagePreview } from "vant";
 export function getImageUrl(name: string) {
   return new URL(`../assets/images/${name}.png`, import.meta.url).href;
+}
+/**
+ * 调用app方法
+ */
+export function callAppFc(event: any, params = {}) {
+  console.log(event, params, "callAppFc");
+  try {
+    window[event].postMessage(JSON.stringify(params));
+  } catch (err) {
+    console.log(err, event);
+  }
+}
+
+/**
+ * 在APP中跳转APP页面的方法
+ */
+export function navAppPage(route: string, callback = "", replace = false) {
+  callAppFc("navAppPage", { route, callback, replace });
+}
+
+/**
+ * c端在APP中返回上一页
+ */
+export function popPage() {
+  callAppFc("popPage");
+}
+
+/**
+ * 家园共育返回上一页
+ */
+export function returnAppPage() {
+  callAppFc("returnAppPage");
+}
+
+/**
+ * 通知 app
+ */
+export function noticeApp(babyId: string, recordId: string) {
+  callAppFc("sendToParent", {
+    title: "发送给家长",
+    babyId,
+    recordId,
+  });
+}
+
+/**
+ * 图片全屏预览
+ */
+export function imagePreview(imgArr: string[], startPosition?: number) {
+  showImagePreview({
+    images: imgArr,
+    startPosition,
+    loop: false,
+  });
 }
 
 /**
  * 文件地址中有中文或者空格，需要编码
  */
-export function imgUrlEncode(imgUrl: string): string {
-  if (imgUrl) {
-    if (imgUrl.indexOf("https") !== -1) imgUrl.replace(/https/, "http");
-    const imgArr = imgUrl.split("/");
-    return imgUrl.split(imgArr[3])[0] + encodeURIComponent(imgArr[3]);
-  }
-  return "";
-}
+// export function imgUrlEncode(imgUrl: string): string {
+//   if (imgUrl) {
+//     if (imgUrl.indexOf("https") !== -1) imgUrl.replace(/https/, "http");
+//     const imgArr = imgUrl.split("/");
+//     return imgUrl.split(imgArr[3])[0] + encodeURIComponent(imgArr[3]);
+//   }
+//   return "";
+// }
 
 // async function convertToImage(element: HTMLElement) {
 //   return html2canvas(element, {
