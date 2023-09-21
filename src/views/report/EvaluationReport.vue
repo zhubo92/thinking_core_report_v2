@@ -2,11 +2,12 @@
 import { useRoute } from "vue-router";
 import { useReportStore } from "@/store";
 import { storeToRefs } from "pinia";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { SwipeInstance, Swipe, SwipeItem } from "vant";
 import TurnPage from "@/views/report/components/TurnPage.vue";
 import CoverPage from "@/views/report/components/CoverPage.vue";
 import HeaderPart from "@/views/report/components/HeaderPart.vue";
+import { setToken } from "@/utils/storage.ts";
 
 const { babyId: _babyId, recordId: _recordId, type: _type } = useRoute().query;
 
@@ -47,10 +48,14 @@ function init() {
   isTeacher.value = _type === "1" || _type === "3";
 }
 
-onMounted(() => {
-  init();
-  getReport();
-});
+(window as any).getToken = (token: string) => {
+  console.log("app返回的token", token);
+  setToken(token);
+};
+console.log((window as any).getToken);
+
+init();
+getReport();
 
 /**
  * 封面页：CoverPage
@@ -110,7 +115,9 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .report {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   box-sizing: border-box;

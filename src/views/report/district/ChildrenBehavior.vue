@@ -7,7 +7,6 @@ const props = defineProps<{
     behave: string;
     images: any;
     videos: any;
-    // abilityName: string;
     abilityLevelName: string;
   };
 }>();
@@ -15,7 +14,6 @@ const props = defineProps<{
 const behave = ref(props.value.behave);
 const images = ref(props.value.images);
 const videos = ref(props.value.videos);
-// const abilityName = ref(props.value.abilityName);
 const abilityLevelName = ref(props.value.abilityLevelName);
 
 const isVideo = computed(() => {
@@ -29,8 +27,16 @@ const isMultiple = computed(() => {
 });
 
 function lightImg(index: number) {
-  console.log(index, "index");
-  return getImageUrl("light");
+  // console.log(index, "index");
+  const i =
+    ["早", "中", "后"].findIndex((item) =>
+      abilityLevelName.value.includes(item),
+    ) + 1;
+  if (index <= i) {
+    return getImageUrl("light");
+  } else {
+    return getImageUrl("no_light");
+  }
 }
 </script>
 
@@ -38,8 +44,14 @@ function lightImg(index: number) {
   <div class="children-behavior cb grid_bgi">
     <img :src="getImageUrl('child_title')" alt="" class="cb-title" />
     <div class="cb-content">
-      <div class="cb-content-behave">{{ behave }}</div>
-      <video v-if="isVideo" :src="videos[0]" class="cb-content-video"></video>
+      <div v-if="behave" class="cb-content-behave">{{ behave }}</div>
+      <video
+        v-if="isVideo"
+        :src="videos[0]"
+        controls
+        :poster="videos[0] + '?vframe/jpg/offset/1'"
+        class="cb-content-video"
+      ></video>
       <img
         v-else-if="isSingle"
         :src="images[0]"
@@ -55,7 +67,10 @@ function lightImg(index: number) {
           @click="imagePreview(images, index)"
         >
           <img :src="img" alt="" class="imgs-img" />
-          <div v-if="index === 8 && images.length > 9" class="imgs-more">
+          <div
+            v-if="index === 8 && images.length > 9"
+            class="imgs-more flex-center"
+          >
             +{{ images.length - 9 }}
           </div>
         </div>
@@ -75,6 +90,10 @@ function lightImg(index: number) {
 </template>
 
 <style scoped lang="scss">
+:global(.van-image-preview__index) {
+  top: 50px !important;
+}
+
 .cb {
   margin: 30px auto 0;
   padding-bottom: 24px;
@@ -92,7 +111,7 @@ function lightImg(index: number) {
   &-content {
     margin: 0 auto;
     padding: 14px 16px 18px;
-    width: 311px;
+    width: 312px;
     background: #ecf9ff;
     border-radius: 0 0 9px 9px;
 
@@ -107,14 +126,19 @@ function lightImg(index: number) {
       line-height: 20px;
     }
 
+    &-video,
+    &-single {
+      border-radius: 15px;
+    }
+
     &-multiple {
       display: flex;
       flex-wrap: wrap;
 
       .imgs {
-        display: flex;
+        margin-right: 8px;
+        margin-bottom: 8px;
         position: relative;
-        width: 33.33%;
 
         &-img {
           width: 88px;
@@ -122,15 +146,40 @@ function lightImg(index: number) {
           object-fit: cover;
           border-radius: 15px;
         }
+
+        &-more {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border-radius: 15px;
+          background-color: rgba(0, 0, 0, 0.5);
+          font-size: 24px;
+          font-family:
+            PingFang SC-Semibold,
+            PingFang SC,
+            serif;
+          font-weight: 600;
+          color: #ffffff;
+        }
       }
 
-      .imgs:nth-child(2) {
-        justify-content: center;
+      .imgs:nth-child(3n) {
+        margin-right: 0;
       }
 
-      .imgs:nth-child(3) {
-        justify-content: flex-end;
+      .imgs:nth-last-child(-n + 3) {
+        margin-bottom: 0;
       }
+    }
+
+    &-behave + &-video {
+      margin-top: 16px;
+    }
+
+    &-behave + &-single {
+      margin-top: 16px;
     }
 
     &-behave + &-multiple {

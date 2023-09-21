@@ -8,7 +8,6 @@ import {
   IDomain,
   IPage,
   IRadarMap,
-  IStory,
 } from "@/types/report.d";
 import {
   getSemesterReportRequest,
@@ -290,22 +289,18 @@ export default defineStore("report", () => {
 
     // 区域分页
     districtList.value?.map((district) => {
-      district.dataList.map((item) => {
+      const { districtName, subtitle, slogan, dataList } = district;
+      dataList.map((item) => {
         const {
-          subtitle,
-          districtName,
-          slogan,
           activityName,
           activityDescription,
           abilityLevelDes,
           domainName,
           domainAbilityName,
-          // abilityName,
           abilityLevelName,
           story,
         } = item;
         const { education, behave } = abilityLevelDes;
-        const { images, videos } = story as IStory;
 
         addComponentIfExist(DistrictName, { districtName, subtitle, slogan });
 
@@ -317,11 +312,12 @@ export default defineStore("report", () => {
           districtName,
         });
 
+        const { images, videos } = story || { images: null, videos: null };
+
         addComponentIfExist(ChildrenBehavior, {
           behave,
           images,
           videos,
-          // abilityName,
           abilityLevelName,
         });
 
@@ -392,6 +388,7 @@ export default defineStore("report", () => {
   }
 
   return {
+    isSendToParent,
     isSingle,
     isTeacher,
     babyId,

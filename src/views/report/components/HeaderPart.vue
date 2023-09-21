@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import { getImageUrl, returnAppPage } from "@/utils/index.js";
 import { useReportStore } from "@/store";
-
-const { sendToParent } = useReportStore();
+import { storeToRefs } from "pinia";
+const reportStore = useReportStore();
+const { isSendToParent } = storeToRefs(reportStore);
+const { sendToParent } = reportStore;
 </script>
 
 <template>
   <div class="top-safety-distance"></div>
-  <div class="header flex-center" @click="returnAppPage">
-    <div class="header-back">
+  <div class="header flex-center">
+    <div class="header-back" @click="returnAppPage">
       <img :src="getImageUrl('return_button')" alt="" class="header-back-img" />
     </div>
     <div class="header-send" @click="sendToParent">
-      <div class="header-send-btn flex-center">发送家长</div>
+      <div class="header-send-btn flex-center">
+        {{ isSendToParent ? "已发送" : "发送家长" }}
+      </div>
     </div>
   </div>
 </template>

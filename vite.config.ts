@@ -13,6 +13,7 @@ const alias: Record<string, string> = {
 };
 export default defineConfig({
   plugins: [vue()],
+  base: "./",
   css: {
     preprocessorOptions: {
       scss: {
@@ -50,8 +51,8 @@ export default defineConfig({
     port: 9898,
     proxy: {
       "/zd-api": {
-        target: "https://open.api.luojigou.vip",
-        // target: "https://open.test.luojigou.vip",
+        // target: "https://open.api.luojigou.vip",
+        target: "https://open.test.luojigou.vip",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/zd-api/, ""),
       },
