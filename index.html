@@ -7,6 +7,13 @@
     <title>思维芯测评</title>
 </head>
 <body>
+<script>
+    window.getToken = (token) => {
+        sessionStorage.setItem('token', token)
+        console.log("家园共育APP 返回的 token：", token);
+    };
+</script>
+
 <div id="app"></div>
 <script type="module" src="/src/main.ts"></script>
 </body>

@@ -7,6 +7,7 @@ const props = defineProps<{
     isEmpty: boolean;
     questionCardUrlList: string[];
     content: string;
+    questions: { question: string; categoryId: string }[];
     images: string[];
     videos: string[];
   };
@@ -14,6 +15,7 @@ const props = defineProps<{
 
 const questionCardUrlList = ref(props.value.questionCardUrlList);
 const content = ref(splitString(props.value.content));
+const questions = ref(props.value.questions);
 const images = ref(props.value.images);
 const videos = ref(props.value.videos);
 
@@ -31,6 +33,16 @@ const isSingleRecord = computed(() => {
 });
 const isVideo = computed(() => {
   return videos.value && videos.value.length !== 0;
+});
+
+const recordIsNull = computed(() => {
+  return (
+    isMultipleRecord.value ||
+    isSingleRecord.value ||
+    isVideo.value ||
+    content.value?.length > 0 ||
+    questions.value?.length > 0
+  );
 });
 
 function splitString(str: string | null): string[] {
@@ -76,23 +88,12 @@ function splitString(str: string | null): string[] {
       @click="imagePreview(questionCardUrlList)"
     />
     <img
-      v-if="isMultipleRecord || isSingleRecord || isVideo || content.length > 0"
+      v-if="recordIsNull"
       :src="getImageUrl('record_title')"
       alt=""
       class="question-header"
     />
-    <div
-      class="question-record"
-      v-if="isMultipleRecord || isSingleRecord || isVideo || content.length > 0"
-    >
-      <div
-        v-for="(item, index) in content"
-        :key="index"
-        class="question-record-item"
-      >
-        <img :src="getImageUrl('record_logo')" alt="" />
-        <div>{{ item }}</div>
-      </div>
+    <div class="question-record" v-if="recordIsNull">
       <div v-if="isMultipleRecord" class="question-record-multiple img-box">
         <div
           v-for="(item, index) in images.slice(0, 9)"
@@ -124,13 +125,29 @@ function splitString(str: string | null): string[] {
         autoplay
         :poster="videos[0] + '?vframe/jpg/offset/1'"
       ></video>
+      <div
+        v-for="(item, index) in questions"
+        :key="index"
+        class="question-record-item"
+      >
+        <img :src="getImageUrl('record_logo')" alt="" />
+        <div>{{ item.question }}</div>
+      </div>
+      <div
+        v-for="(item, index) in content"
+        :key="index"
+        class="question-record-item"
+      >
+        <img :src="getImageUrl('record_logo')" alt="" />
+        <div>{{ item }}</div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .question {
-  margin: 30px auto 0;
+  margin: 16px auto 0;
   padding: 26px 16px 20px;
   width: 343px;
   box-shadow: 0 1px 6px 0 rgba(42, 105, 253, 0.16);
@@ -280,7 +297,7 @@ function splitString(str: string | null): string[] {
       margin-top: 10px;
     }
 
-    &-item + .img-box {
+    .img-box + &-item {
       margin-top: 16px;
     }
   }

@@ -7,9 +7,8 @@ import router from "@/router";
 import store from "@/store";
 import "vant/lib/index.css";
 import { Swipe, SwipeItem } from "vant";
-import vconsole from "vconsole";
-
-new vconsole();
+// import vconsole from "vconsole";
+// new vconsole();
 
 createApp(App)
   .use(router)

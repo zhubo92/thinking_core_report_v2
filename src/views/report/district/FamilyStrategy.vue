@@ -22,7 +22,7 @@ const education = ref(props.value);
 <style scoped lang="scss">
 .fs {
   padding: 20px 0 17px;
-  margin: 30px auto 0;
+  margin: 16px auto 0;
   width: 343px;
   box-shadow: 0 1px 6px 0 rgba(42, 105, 253, 0.16);
   border-radius: 17px 17px 17px 17px;

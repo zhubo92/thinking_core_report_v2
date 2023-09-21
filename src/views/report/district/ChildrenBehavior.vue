@@ -44,7 +44,6 @@ function lightImg(index: number) {
   <div class="children-behavior cb grid_bgi">
     <img :src="getImageUrl('child_title')" alt="" class="cb-title" />
     <div class="cb-content">
-      <div v-if="behave" class="cb-content-behave">{{ behave }}</div>
       <video
         v-if="isVideo"
         :src="videos[0]"
@@ -75,6 +74,8 @@ function lightImg(index: number) {
           </div>
         </div>
       </div>
+
+      <div v-if="behave" class="cb-content-behave">{{ behave }}</div>
     </div>
     <div class="cb-domain">
       <div class="cb-domain-text">探索程度：{{ abilityLevelName }}</div>
@@ -174,15 +175,15 @@ function lightImg(index: number) {
       }
     }
 
-    &-behave + &-video {
+    &-video + &-behave {
       margin-top: 16px;
     }
 
-    &-behave + &-single {
+    &-single + &-behave {
       margin-top: 16px;
     }
 
-    &-behave + &-multiple {
+    &-multiple + &-behave {
       margin-top: 16px;
     }
   }

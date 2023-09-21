@@ -7,7 +7,6 @@ import { SwipeInstance, Swipe, SwipeItem } from "vant";
 import TurnPage from "@/views/report/components/TurnPage.vue";
 import CoverPage from "@/views/report/components/CoverPage.vue";
 import HeaderPart from "@/views/report/components/HeaderPart.vue";
-import { setToken } from "@/utils/storage.ts";
 
 const { babyId: _babyId, recordId: _recordId, type: _type } = useRoute().query;
 
@@ -47,12 +46,6 @@ function init() {
   isSingle.value = _type === "1" || _type === "2";
   isTeacher.value = _type === "1" || _type === "3";
 }
-
-(window as any).getToken = (token: string) => {
-  console.log("app返回的token", token);
-  setToken(token);
-};
-console.log((window as any).getToken);
 
 init();
 getReport();

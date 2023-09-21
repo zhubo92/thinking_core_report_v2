@@ -17,7 +17,7 @@ interface IQuestion {
   content: string | null;
   description: null | string;
   images: null | string[];
-  questions: null | string[];
+  questions: null | { question: string; categoryId: string }[];
   videos: null | string[];
 }
 

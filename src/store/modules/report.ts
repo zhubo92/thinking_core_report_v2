@@ -206,7 +206,7 @@ export default defineStore("report", () => {
         videos: null,
       };
     }
-    const { content, images, videos } = item.question;
+    const { content, images, videos, questions } = item.question;
 
     interface IQuestion {
       isEmpty: boolean;
@@ -215,6 +215,7 @@ export default defineStore("report", () => {
       content: null | string;
       images: null | string[];
       videos: null | string[];
+      questions: null | { question: string; categoryId: string }[];
     }
 
     const question: IQuestion = {
@@ -224,6 +225,7 @@ export default defineStore("report", () => {
       content: null,
       images: null,
       videos: null,
+      questions: null,
     };
     if (questionCardUrl) {
       question.questionCardUrl = questionCardUrl;
@@ -238,6 +240,10 @@ export default defineStore("report", () => {
       question.content = content;
       question.isEmpty = false;
     }
+    if (questions) {
+      question.questions = questions;
+      question.isEmpty = false;
+    }
 
     if (images) {
       question.images = images;
@@ -250,7 +256,6 @@ export default defineStore("report", () => {
 
     if (!question.isEmpty) {
       addComponentIfExist(QuestionPart, question);
-      // console.log(question, 'question')
     }
   }
 
