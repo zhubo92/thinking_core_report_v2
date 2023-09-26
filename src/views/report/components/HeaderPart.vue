@@ -3,7 +3,7 @@ import { getImageUrl, returnAppPage } from "@/utils/index.js";
 import { useReportStore } from "@/store";
 import { storeToRefs } from "pinia";
 const reportStore = useReportStore();
-const { isSendToParent } = storeToRefs(reportStore);
+const { isSendToParent, isTeacher } = storeToRefs(reportStore);
 const { sendToParent } = reportStore;
 </script>
 
@@ -13,11 +13,12 @@ const { sendToParent } = reportStore;
     <div class="header-back" @click="returnAppPage">
       <img :src="getImageUrl('return_button')" alt="" class="header-back-img" />
     </div>
-    <div class="header-send" @click="sendToParent">
+    <div v-if="isTeacher" class="header-send" @click="sendToParent">
       <div class="header-send-btn flex-center">
         {{ isSendToParent ? "已发送" : "发送家长" }}
       </div>
     </div>
+    <div v-else></div>
   </div>
 </template>
 
