@@ -72,12 +72,22 @@ getReport();
  *   }
  * }
  */
+
+/**
+ * 测试环境
+ *
+ * 单次：http://192.168.1.17:8989/#/report?recordId=1704673396997074946&babyId=1304672468777553921&type=1
+ *
+ * 综合：http://192.168.1.17:8989/#/report?recordId=1529650322799325186&babyId=1304672468777553921&type=3
+ */
 </script>
 
 <template>
   <CoverPage v-if="showCover" :info="babyInfo" @start="start" />
-  <div v-else class="report">
+
+  <div class="report">
     <HeaderPart />
+
     <Swipe
       ref="swipeRef"
       class="sp"

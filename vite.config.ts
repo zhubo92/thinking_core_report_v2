@@ -48,7 +48,7 @@ export default defineConfig({
   },
   server: {
     host: true,
-    port: 9898,
+    port: 8989,
     proxy: {
       "/zd-api": {
         // target: "https://open.api.luojigou.vip",
