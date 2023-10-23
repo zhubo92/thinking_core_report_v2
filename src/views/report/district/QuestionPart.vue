@@ -19,26 +19,31 @@ const questions = ref(props.value.questions);
 const images = ref(props.value.images);
 const videos = ref(props.value.videos);
 
-const isMultiple = computed(() => {
-  return questionCardUrlList.value && questionCardUrlList.value.length > 1;
+// const isMultiple = computed(() => {
+//   return questionCardUrlList.value && questionCardUrlList.value.length > 1;
+// });
+// const isSingle = computed(() => {
+//   return questionCardUrlList.value && questionCardUrlList.value.length === 1;
+// });
+const isImage = computed(() => {
+  return questionCardUrlList.value && questionCardUrlList.value.length > 0;
 });
-const isSingle = computed(() => {
-  return questionCardUrlList.value && questionCardUrlList.value.length === 1;
-});
-const isMultipleRecord = computed(() => {
-  return images.value && images.value.length > 1;
-});
-const isSingleRecord = computed(() => {
-  return images.value && images.value.length === 1;
-});
+// const isMultipleRecord = computed(() => {
+//   return images.value && images.value.length > 1;
+// });
+// const isSingleRecord = computed(() => {
+//   return images.value && images.value.length === 1;
+// });
 const isVideo = computed(() => {
   return videos.value && videos.value.length !== 0;
+});
+const isImageRecord = computed(() => {
+  return images.value && images.value.length !== 0;
 });
 
 const recordIsNull = computed(() => {
   return (
-    isMultipleRecord.value ||
-    isSingleRecord.value ||
+    isImageRecord.value ||
     isVideo.value ||
     content.value?.length > 0 ||
     questions.value?.length > 0
@@ -59,12 +64,12 @@ function splitString(str: string | null): string[] {
 <template>
   <div class="question grid_bgi">
     <img
-      v-if="isMultiple || isSingle"
+      v-if="isImage"
       :src="getImageUrl('question_title')"
       alt=""
       class="question-title"
     />
-    <div v-if="isMultiple" class="question-multiple">
+    <div v-if="isImage" class="question-multiple">
       <div
         v-for="(item, index) in questionCardUrlList.slice(0, 9)"
         :key="index"
@@ -80,13 +85,13 @@ function splitString(str: string | null): string[] {
         </div>
       </div>
     </div>
-    <img
-      v-else-if="isSingle"
-      :src="questionCardUrlList[0]"
-      alt=""
-      class="question-single"
-      @click="imagePreview(questionCardUrlList)"
-    />
+    <!--<img-->
+    <!--  v-else-if="isSingle"-->
+    <!--  :src="questionCardUrlList[0]"-->
+    <!--  alt=""-->
+    <!--  class="question-single"-->
+    <!--  @click="imagePreview(questionCardUrlList)"-->
+    <!--/>-->
     <img
       v-if="recordIsNull"
       :src="getImageUrl('record_title')"
@@ -94,7 +99,7 @@ function splitString(str: string | null): string[] {
       class="question-header"
     />
     <div class="question-record" v-if="recordIsNull">
-      <div v-if="isMultipleRecord" class="question-record-multiple img-box">
+      <div v-if="isImageRecord" class="question-record-multiple img-box">
         <div
           v-for="(item, index) in images.slice(0, 9)"
           :key="index"
@@ -110,13 +115,13 @@ function splitString(str: string | null): string[] {
           </div>
         </div>
       </div>
-      <img
-        v-else-if="isSingleRecord"
-        :src="images[0]"
-        alt=""
-        class="question-record-single img-box"
-        @click="imagePreview(images)"
-      />
+      <!--<img-->
+      <!--  v-else-if="isSingleRecord"-->
+      <!--  :src="images[0]"-->
+      <!--  alt=""-->
+      <!--  class="question-record-single img-box"-->
+      <!--  @click="imagePreview(images)"-->
+      <!--/>-->
       <video
         v-else-if="isVideo"
         :src="videos[0]"

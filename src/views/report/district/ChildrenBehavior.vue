@@ -19,12 +19,15 @@ const abilityLevelName = ref(props.value.abilityLevelName);
 const isVideo = computed(() => {
   return Array.isArray(videos.value) && videos.value.length !== 0;
 });
-const isSingle = computed(() => {
-  return Array.isArray(images.value) && images.value.length === 1;
+const isImage = computed(() => {
+  return Array.isArray(images.value) && images.value.length > 0;
 });
-const isMultiple = computed(() => {
-  return Array.isArray(images.value) && images.value.length > 1;
-});
+// const isSingle = computed(() => {
+//   return Array.isArray(images.value) && images.value.length === 1;
+// });
+// const isMultiple = computed(() => {
+//   return Array.isArray(images.value) && images.value.length > 1;
+// });
 
 function lightImg(index: number) {
   // console.log(index, "index");
@@ -51,14 +54,14 @@ function lightImg(index: number) {
         :poster="videos[0] + '?vframe/jpg/offset/1'"
         class="cb-content-video"
       ></video>
-      <img
-        v-else-if="isSingle"
-        :src="images[0]"
-        alt=""
-        class="cb-content-single"
-        @click="imagePreview(images)"
-      />
-      <div class="cb-content-multiple" v-else-if="isMultiple">
+      <!--<img-->
+      <!--  v-else-if="isSingle"-->
+      <!--  :src="images[0]"-->
+      <!--  alt=""-->
+      <!--  class="cb-content-single"-->
+      <!--  @click="imagePreview(images)"-->
+      <!--/>-->
+      <div class="cb-content-multiple" v-else-if="isImage">
         <div
           v-for="(img, index) in images.slice(0, 9)"
           :key="index"
@@ -127,8 +130,7 @@ function lightImg(index: number) {
       line-height: 20px;
     }
 
-    &-video,
-    &-single {
+    &-video {
       border-radius: 15px;
     }
 
