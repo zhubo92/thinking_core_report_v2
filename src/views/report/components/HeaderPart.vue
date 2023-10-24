@@ -53,8 +53,7 @@ const { sendToParent } = reportStore;
       font-size: 14px;
       font-family:
         PingFang SC-Medium,
-        PingFang SC,
-        serif;
+        PingFang SC;
       font-weight: 600;
       color: #233cd5;
     }

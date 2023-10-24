@@ -58,9 +58,8 @@ const babyInfo = ref<IBabyInfo>(props.value);
       height: 25px;
       font-size: 18px;
       font-family:
-        PingFang SC-Semibold,
-        PingFang SC,
-        serif;
+        PingFang SC-Regular,
+        PingFang SC;
       font-weight: 600;
       color: #2c1717;
       line-height: 22px;
@@ -73,8 +72,7 @@ const babyInfo = ref<IBabyInfo>(props.value);
       font-size: 14px;
       font-family:
         PingFang SC-Regular,
-        PingFang SC,
-        serif;
+        PingFang SC;
       font-weight: 400;
       color: #2c1717;
       line-height: 17px;

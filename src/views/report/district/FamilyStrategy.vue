@@ -58,8 +58,7 @@ const education = ref(props.value);
       font-size: 14px;
       font-family:
         PingFang SC-Regular,
-        PingFang SC,
-        serif;
+        PingFang SC;
       font-weight: 400;
       color: #1a2c5e;
       line-height: 20px;

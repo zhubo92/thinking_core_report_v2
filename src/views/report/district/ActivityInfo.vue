@@ -97,8 +97,7 @@ const bgi = computed(() => {
       font-size: 14px;
       font-family:
         PingFang SC-Medium,
-        PingFang SC,
-        serif;
+        PingFang SC;
       font-weight: 600;
       color: #2a69fd;
       white-space: nowrap;
@@ -120,8 +119,7 @@ const bgi = computed(() => {
       font-size: 14px;
       font-family:
         PingFang SC-Regular,
-        PingFang SC,
-        serif;
+        PingFang SC;
       font-weight: 400;
       color: #333333;
       line-height: 20px;

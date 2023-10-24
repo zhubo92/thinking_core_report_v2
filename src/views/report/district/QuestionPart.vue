@@ -193,7 +193,7 @@ function splitString(str: string | null): string[] {
         background-color: rgba(0, 0, 0, 0.5);
         font-size: 26px;
         font-family:
-          PingFang SC-Semibold,
+          PingFang SC-Regular,
           PingFang SC,
           serif;
         font-weight: 600;
@@ -276,7 +276,7 @@ function splitString(str: string | null): string[] {
           background-color: rgba(0, 0, 0, 0.5);
           font-size: 24px;
           font-family:
-            PingFang SC-Semibold,
+            PingFang SC-Regular,
             PingFang SC,
             serif;
           font-weight: 600;

@@ -50,12 +50,23 @@ export function noticeApp(babyId: string, recordId: string) {
 /**
  * 图片全屏预览
  */
-export function imagePreview(imgArr: string[], startPosition?: number) {
-  showImagePreview({
-    images: imgArr,
-    startPosition,
-    loop: false,
-  });
+export function imagePreview(
+  imgArr: string[] | string,
+  startPosition?: number,
+) {
+  if (Array.isArray(imgArr)) {
+    showImagePreview({
+      images: imgArr,
+      startPosition,
+      loop: false,
+    });
+  } else {
+    showImagePreview({
+      images: [imgArr],
+      startPosition: 0,
+      loop: false,
+    });
+  }
 }
 
 /**

@@ -123,8 +123,7 @@ function lightImg(index: number) {
       font-size: 14px;
       font-family:
         PingFang SC-Regular,
-        PingFang SC,
-        serif;
+        PingFang SC;
       font-weight: 400;
       color: #1a2c5e;
       line-height: 20px;
@@ -160,7 +159,7 @@ function lightImg(index: number) {
           background-color: rgba(0, 0, 0, 0.5);
           font-size: 24px;
           font-family:
-            PingFang SC-Semibold,
+            PingFang SC-Regular,
             PingFang SC,
             serif;
           font-weight: 600;
@@ -205,8 +204,7 @@ function lightImg(index: number) {
       font-size: 14px;
       font-family:
         Source Han Sans CN-Regular,
-        Source Han Sans CN,
-        serif;
+        Source Han Sans CN;
       font-weight: 400;
       color: #1a2c5e;
       line-height: 20px;

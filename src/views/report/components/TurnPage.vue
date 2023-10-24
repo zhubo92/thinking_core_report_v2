@@ -96,8 +96,7 @@ watch(
       font-size: 13px;
       font-family:
         PingFangSC-Medium,
-        PingFang SC,
-        serif;
+        PingFang SC;
       font-weight: 600;
       color: #2a69fd;
       transition: width 0.4s 0.2s;
