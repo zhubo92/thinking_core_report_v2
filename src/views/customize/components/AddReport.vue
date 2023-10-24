@@ -2,7 +2,7 @@
 import { getImageUrl, imagePreview } from "@/utils";
 import { Overlay } from "vant";
 
-const props = defineProps(["show"]);
+const props = defineProps(["show", "isKnow"]);
 const emit = defineEmits(["close", "goAdd"]);
 </script>
 
@@ -24,7 +24,16 @@ const emit = defineEmits(["close", "goAdd"]);
       <div class="ar-title">
         暂无记录，选择要加入幼儿综合报告的记录点击“<span>加入报告</span>”
       </div>
-      <div class="ar-button flex-center" @click="emit('goAdd')">去添加</div>
+      <div
+        v-if="props.isKnow"
+        class="ar-button flex-center"
+        @click="emit('close')"
+      >
+        知道了
+      </div>
+      <div v-else class="ar-button flex-center" @click="emit('goAdd')">
+        去添加
+      </div>
     </div>
   </Overlay>
 </template>

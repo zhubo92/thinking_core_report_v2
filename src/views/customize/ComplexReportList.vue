@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getImageUrl, returnAppPage } from "@/utils";
-import AddReport from "@/views/customize/complex/components/AddReport.vue";
+import AddReport from "@/views/customize/components/AddReport.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -40,13 +40,13 @@ function goDetail(item: IItem) {
   <div class="back" @click="returnAppPage">
     <img :src="getImageUrl('back_button')" alt="" class="back-img" />
   </div>
-  <img :src="getImageUrl('complex_list_bgi_top')" alt="" class="bgi" />
   <div
     class="report-list rl"
     :style="{
       backgroundImage: `url(${getImageUrl('complex_list_bgi_bottom')})`,
     }"
   >
+    <img :src="getImageUrl('complex_list_bgi_top')" alt="" class="rl-bgi" />
     <div
       class="rl-info"
       :style="{ backgroundImage: `url(${getImageUrl('complex_info')})` }"
@@ -113,25 +113,31 @@ function goDetail(item: IItem) {
   }
 }
 
-.bgi {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 255px;
-}
-
 .rl {
   display: flex;
   flex-direction: column;
   position: relative;
-  z-index: 2;
+  z-index: 1;
   padding-top: 88px;
   width: 100vw;
   min-height: 100vh;
   background-repeat: repeat-y;
   background-size: 100%;
   overflow: hidden;
+
+  &-bgi {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100vw;
+    height: 255px;
+  }
+
+  > div {
+    position: relative;
+    z-index: 2;
+  }
 
   &-info {
     padding-top: 59px;

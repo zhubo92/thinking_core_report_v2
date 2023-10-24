@@ -5,7 +5,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/customize/complex/ReportDetail",
+      redirect: "/customize/GrowthRecord",
     },
     {
       path: "/report",
@@ -13,14 +13,19 @@ const router = createRouter({
       component: () => import("@/views/report/EvaluationReport.vue"),
     },
     {
-      path: "/customize/complex/ReportDetail",
-      name: "ReportDetail",
-      component: () => import("@/views/customize/complex/ReportDetail.vue"),
+      path: "/customize/ComplexReportDetail",
+      name: "ComplexReportDetail",
+      component: () => import("@/views/customize/ComplexReportDetail.vue"),
     },
     {
-      path: "/customize/complex/ReportList",
-      name: "ReportList",
-      component: () => import("@/views/customize/complex/ReportList.vue"),
+      path: "/customize/ComplexReportList",
+      name: "ComplexReportList",
+      component: () => import("@/views/customize/ComplexReportList.vue"),
+    },
+    {
+      path: "/customize/GrowthRecord",
+      name: "GrowthRecord",
+      component: () => import("@/views/customize/GrowthRecord.vue"),
     },
   ],
 });
