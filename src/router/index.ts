@@ -5,7 +5,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/customize/GrowthRecord",
+      redirect: "/customize/ComplexReportDetail",
     },
     {
       path: "/report",
@@ -26,6 +26,11 @@ const router = createRouter({
       path: "/customize/GrowthRecord",
       name: "GrowthRecord",
       component: () => import("@/views/customize/GrowthRecord.vue"),
+    },
+    {
+      path: "/customize/SingleRecord",
+      name: "SingleRecord",
+      component: () => import("@/views/customize/SingleRecord.vue"),
     },
   ],
 });

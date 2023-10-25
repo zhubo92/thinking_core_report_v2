@@ -71,25 +71,12 @@ function getFieldLogo(title: string) {
       class="rd-info"
       :style="{ backgroundImage: `url(${getImageUrl('detail_info')})` }"
     >
-      <div class="rd-info-top">
-        <div class="avatar">
-          <img
-            :src="getImageUrl('activity_bgi_05')"
-            alt=""
-            class="avatar-img"
-          />
-          <img
-            :src="getImageUrl('detail_ava')"
-            alt=""
-            class="avatar-decorate"
-          />
-        </div>
-        <div
-          class="name"
-          :style="{ backgroundImage: `url(${getImageUrl('detail_name')})` }"
-        >
-          张星星
-        </div>
+      <img :src="getImageUrl('class_logo')" alt="" class="rd-info-avatar" />
+      <div
+        class="rd-info-name"
+        :style="{ backgroundImage: `url(${getImageUrl('detail_name')})` }"
+      >
+        张星星
       </div>
       <div class="rd-info-garden">北京思维魔法逻辑狗幼儿园</div>
       <div class="rd-info-class">逻辑狗中二班</div>
@@ -195,64 +182,44 @@ function getFieldLogo(title: string) {
   }
 
   &-info {
-    padding-top: 98px;
+    //padding-top: 98px;
     position: relative;
     width: 100%;
     height: 210px;
     background-size: contain;
 
-    &-top {
-      position: absolute;
-      top: -43px;
-      left: 50%;
-      transform: translateX(-50%);
+    &-avatar {
+      position: relative;
+      top: -51px;
+      margin: 0 auto 0;
+      width: 60px;
+      height: 60px;
+      border: 8px solid #ffe082;
+      background-color: #fff;
+      border-radius: 50%;
+      box-sizing: content-box;
+      object-fit: cover;
+    }
 
-      .avatar {
-        margin: 0 auto;
-        position: relative;
-        width: 76px;
-        height: 76px;
-
-        &-img {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 2;
-          width: 63px;
-          height: 63px;
-          border-radius: 50%;
-        }
-
-        &-decorate {
-          position: relative;
-          z-index: 3;
-          width: 76px;
-          height: 76px;
-          object-fit: cover;
-        }
-      }
-
-      .name {
-        position: relative;
-        z-index: 3;
-        margin-top: -17px;
-        width: 101px;
-        height: 30px;
-        line-height: 30px;
-        background-size: auto 100%;
-        background-repeat: no-repeat;
-        background-position: center center;
-        text-align: center;
-        font-size: 14px;
-        font-family:
-          PingFang SC-Regular,
-          PingFang SC,
-          serif;
-        font-weight: 600;
-        color: #ffffff;
-        @include single-hide();
-      }
+    &-name {
+      position: relative;
+      z-index: 2;
+      margin: -62px auto 54px;
+      width: 101px;
+      height: 30px;
+      line-height: 30px;
+      background-size: auto 100%;
+      background-repeat: no-repeat;
+      background-position: center center;
+      text-align: center;
+      font-size: 14px;
+      font-family:
+        PingFang SC-Regular,
+        PingFang SC,
+        serif;
+      font-weight: 600;
+      color: #ffffff;
+      @include single-hide();
     }
 
     &-garden,

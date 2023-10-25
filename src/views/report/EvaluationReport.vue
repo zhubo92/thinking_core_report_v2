@@ -11,6 +11,7 @@ import HeaderPart from "@/views/report/components/HeaderPart.vue";
 const { babyId: _babyId, recordId: _recordId, type: _type } = useRoute().query;
 
 const reportStore = useReportStore();
+
 const { isSingle, isTeacher, babyId, recordId, babyInfo, totalPage, pageList } =
   storeToRefs(reportStore);
 const { getReport } = reportStore;

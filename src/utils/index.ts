@@ -1,5 +1,6 @@
 // import html2canvas from 'html2canvas';
 import { showImagePreview } from "vant";
+import { setToken } from "@/utils/storage.ts";
 export function getImageUrl(name: string) {
   return new URL(`../assets/images/${name}.png`, import.meta.url).href;
 }
@@ -67,6 +68,25 @@ export function imagePreview(
       loop: false,
     });
   }
+}
+
+/**
+ * 向 app 请求 token
+ */
+export function getAppToken() {
+  callAppFc("getToken");
+  setToken(
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNDI4MTg4Nzc3NDQ0MjA0NTQ1IiwiZXhwIjoxNjk3NDUzNTU5fQ.oSNEq2Y2hnnsSCanVur-ZsrP6OZPcnQg4Em9TwClN00",
+  );
+
+  return new Promise((resolve) => {
+    (window as any).returnToken = (token: string) => {
+      if (token) {
+        setToken(token);
+        resolve(token);
+      }
+    };
+  });
 }
 
 /**
