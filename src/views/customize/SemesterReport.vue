@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getImageUrl, returnAppPage } from "@/utils";
+import { getImageUrl, imagePreview, returnAppPage } from "@/utils";
 import { ref } from "vue";
 
 interface IItem {
@@ -120,6 +120,7 @@ function getFieldLogo(title: string) {
             :key="imgIndex"
             :src="img"
             alt=""
+            @click="imagePreview(imageList, imgIndex)"
           />
         </div>
         <div class="desc">

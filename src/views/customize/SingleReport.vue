@@ -1,17 +1,36 @@
 <script setup lang="ts">
-import { getAppToken, getImageUrl, imagePreview } from "@/utils";
+import { getImageUrl, imagePreview } from "@/utils";
 import { useCustomizeStore } from "@/store";
-import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import HeaderPart from "@/views/customize/components/HeaderPart.vue";
 import { storeToRefs } from "pinia";
 import { IAbility } from "@/types/customize.d";
+import { computed, onMounted } from "vue";
 
 const { babyId, id } = useRoute().query;
 const customizeStore = useCustomizeStore();
 
 const { singleRecord } = storeToRefs(customizeStore);
 const { getSingleRecord } = customizeStore;
+
+const isImages = computed(() => {
+  return singleRecord.value.story?.images.length !== 0;
+});
+const isVideo = computed(() => {
+  return singleRecord.value.story?.videos.length !== 0;
+});
+const isContent = computed(() => {
+  return (
+    singleRecord.value.story?.content &&
+    singleRecord.value.story?.content.length !== 0
+  );
+});
+const isHas = computed(() => {
+  return (
+    singleRecord.value.story &&
+    (isImages.value || isVideo.value || isContent.value)
+  );
+});
 
 function formatNames(names: string[]) {
   let str = "";
@@ -25,19 +44,17 @@ function formatNames(names: string[]) {
 }
 
 onMounted(async () => {
-  // todo await
-  getAppToken();
   if (typeof babyId === "string" && typeof id === "string")
     await getSingleRecord(babyId, id);
 });
 
 /**
- * http://192.168.1.17:8989/#/customize/SingleRecord?babyId=1304672468777553921&id=1716737882201264130
+ * http://192.168.1.17:8989/#/customize/SingleReport?babyId=1304672468777553921&id=1716737882201264130
  */
 </script>
 
 <template>
-  <div class="single-record">
+  <div class="single-report">
     <HeaderPart />
     <div class="sr">
       <div class="sr-top">
@@ -78,31 +95,32 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="sr-behavior">
+      <div v-if="isHas" class="sr-behavior">
         <img
           :src="getImageUrl('behavior_title')"
           alt=""
           class="sr-behavior-title"
         />
         <div class="sr-behavior-content">
-          <div class="images">
+          <div v-if="isImages" class="images">
             <img
-              v-for="(item, index) in singleRecord.story.images"
+              v-for="(item, index) in singleRecord.story?.images"
               :key="index"
               :src="item"
               alt=""
               class="images-img"
-              @click="imagePreview(singleRecord.story.images, index)"
+              @click="imagePreview(singleRecord.story?.images || [], index)"
             />
           </div>
-          <div
-            v-if="
-              singleRecord.story.content &&
-              singleRecord.story.content.length !== 0
-            "
-            class="content"
-          >
-            {{ singleRecord.story.content }}
+          <video
+            v-else-if="isVideo"
+            :src="singleRecord.story?.videos[0]"
+            controls
+            :poster="singleRecord.story?.videos[0] + '?vframe/jpg/offset/1'"
+            class="video"
+          ></video>
+          <div v-if="isContent" class="content">
+            {{ singleRecord.story?.content }}
           </div>
         </div>
       </div>
@@ -169,7 +187,7 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss">
-.single-record {
+.single-report {
   position: fixed;
   top: 0;
   left: 0;
@@ -218,14 +236,15 @@ onMounted(async () => {
 
       &-line {
         display: flex;
-        align-items: center;
+        //align-items: center;
 
         .label {
           display: flex;
           align-items: center;
+          height: 20px;
 
           &-triangle {
-            margin-top: -3px;
+            //margin-top: 4px;
             margin-right: 8px;
             width: 0;
             height: 0;
@@ -241,10 +260,12 @@ onMounted(async () => {
             color: #2a69fd;
             font-weight: 600;
             font-size: 14px;
+            white-space: nowrap;
           }
         }
 
         .value {
+          flex: 1;
           color: #333;
           font-weight: 500;
           font-size: 14px;
@@ -272,7 +293,7 @@ onMounted(async () => {
       }
 
       &-content {
-        padding: 14px 0 0 8px;
+        padding: 14px 0 16px 8px;
         width: 311px;
         background: #ecf9ff;
         border-radius: 9px 9px 9px 9px;
@@ -282,22 +303,31 @@ onMounted(async () => {
           display: flex;
           align-items: center;
           flex-wrap: wrap;
-          margin-bottom: 8px;
 
           &-img {
-            margin-left: 8px;
             margin-bottom: 8px;
+            margin-left: 8px;
             width: 88px;
             height: 88px;
             object-fit: cover;
             border-radius: 9px 9px 9px 9px;
           }
+
+          &-img:nth-last-child(-n + 3) {
+            margin-bottom: 0;
+          }
+        }
+
+        .video {
+          display: block;
+          margin-left: 8px;
+          width: 279px;
+          border-radius: 9px 9px 9px 9px;
         }
 
         .content {
           margin-left: 8px;
           margin-right: 16px;
-          margin-bottom: 16px;
           font-size: 14px;
           font-family:
             PingFang SC-Regular,
@@ -305,6 +335,11 @@ onMounted(async () => {
           font-weight: 400;
           color: #1a2c5e;
           line-height: 20px;
+        }
+
+        .images + .content,
+        .video + .content {
+          margin-top: 16px;
         }
       }
     }

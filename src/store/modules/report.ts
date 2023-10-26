@@ -205,6 +205,8 @@ export default defineStore("report", () => {
         questions: null,
         videos: null,
       };
+
+      return;
     }
     const { content, images, videos, questions } = item.question;
 

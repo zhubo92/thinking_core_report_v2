@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { getImageUrl, returnAppPage } from "@/utils";
-import { ref } from "vue";
+import { getAppToken, getImageUrl, imagePreview, returnAppPage } from "@/utils";
+import { onMounted, ref } from "vue";
 import { showToast } from "vant";
 import AddReport from "@/views/customize/components/AddReport.vue";
 import ConfirmJoin from "@/views/customize/components/ConfirmJoin.vue";
-
-interface IClass {
-  id: number;
-  title: string;
-}
+import { useRoute, useRouter } from "vue-router";
+import { useCustomizeStore } from "@/store";
+import { storeToRefs } from "pinia";
+import { formatClassLevelCode, formatSemesterType } from "@/utils/filter.ts";
+import { IBabyRecord } from "@/types/customize";
 interface IType {
   id: number;
   name: string;
@@ -19,48 +19,149 @@ const TYPE_LIST: IType[] = [
   { id: 1, name: "behavior_class", isHas: true },
   { id: 2, name: "question_class", isHas: false },
 ];
+const router = useRouter();
+const { babyId, classId, classLevelCode, gameType, semesterType } =
+  useRoute().query;
 
-const classList = ref<IClass[]>([
-  {
-    id: 0,
-    title: "全部",
-  },
-  {
-    id: 46,
-    title: "逻辑思维通用领域",
-  },
-  {
-    id: 1,
-    title: "艺术领域",
-  },
-  {
-    id: 2,
-    title: "艺术领域",
-  },
-  {
-    id: 3,
-    title: "艺术领域",
-  },
-  {
-    id: 4,
-    title: "艺术领域",
-  },
-]);
+const customizeStore = useCustomizeStore();
 
-const currentId = ref(0);
+const { babyRecordList, babyDetail, domainList, babyRecordTotal } =
+  storeToRefs(customizeStore);
+const { getBabyRecord, getBabyDetail, getDomainList, joinSemesterReport } =
+  customizeStore;
+
+const page = ref<number>(1);
+const pageSize = ref<number>(20);
+const currentId = ref<string>("");
+
 const currentType = ref(1);
 const show = ref(false);
 const showConfirm = ref(false);
+const temporaryId = ref<string>("");
+const temporaryState = ref<0 | 1>(0);
+
+function isHas(content: string[]) {
+  return Array.isArray(content) && content.length > 0;
+}
 
 function switchType(type: IType) {
   if (type.isHas) currentType.value = type.id;
   else showToast("问题记录暂未开通 \n" + "敬请期待");
 }
 
-function confirm() {
+async function confirm() {
   console.log("confirm");
+  await joinSemesterReport(temporaryId.value, temporaryState.value);
   showConfirm.value = false;
 }
+
+function sliceAbility(item: IBabyRecord) {
+  if (item.isExpand) {
+    return item.abilityList;
+  } else {
+    return item.abilityList.slice(0, 3);
+  }
+}
+
+function lookReport() {
+  if (
+    babyRecordList.value.findIndex((item) => item.joinSemester === 1) !== -1
+  ) {
+    router.push({
+      path: "/customize/SemesterReport",
+      query: {
+        babyId,
+        classId,
+        classLevelCode,
+        gameType,
+        semesterType,
+      },
+    });
+  } else {
+    show.value = true;
+  }
+}
+
+function openConfirm(id: string, state: 0 | 1) {
+  temporaryId.value = id;
+  temporaryState.value = state;
+  showConfirm.value = true;
+}
+
+async function switchClass(id: string) {
+  babyRecordList.value = [];
+  currentId.value = id;
+  page.value = 1;
+  await getMore();
+}
+
+async function getMore() {
+  if (
+    typeof babyId === "string" &&
+    typeof classId === "string" &&
+    typeof classLevelCode === "string" &&
+    typeof semesterType === "string" &&
+    typeof gameType === "string"
+  ) {
+    await getBabyRecord({
+      babyId,
+      classId,
+      classLevelCode,
+      gameType,
+      semesterType,
+      page: page.value,
+      pageSize: pageSize.value,
+      domainId: currentId.value,
+    });
+  }
+}
+
+onMounted(async () => {
+  babyRecordList.value = [];
+  // todo await
+  getAppToken();
+
+  if (
+    typeof babyId === "string" &&
+    typeof classId === "string" &&
+    typeof classLevelCode === "string" &&
+    typeof semesterType === "string" &&
+    typeof gameType === "string"
+  ) {
+    await getBabyDetail(babyId);
+    await getDomainList();
+    await getBabyRecord({
+      babyId,
+      classId,
+      classLevelCode,
+      gameType,
+      semesterType,
+      page: page.value,
+      pageSize: pageSize.value,
+      domainId: currentId.value,
+    });
+  }
+
+  window.addEventListener("scroll", () => {
+    let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    let clientHeight = document.documentElement.clientHeight;
+    let scrollHeight = document.documentElement.scrollHeight;
+    if (scrollTop + clientHeight + 10 >= scrollHeight) {
+      console.log("滚动到底部了");
+
+      if (babyRecordTotal.value <= babyRecordList.value.length) {
+        showToast("没有更多了");
+      } else {
+        getMore();
+      }
+    }
+  });
+});
+
+/**
+ * http://192.168.1.17:8989/#/customize/GrowthRecord?classId=1304705777133330433&classLevelCode=0&gameType=2&recordType=1&semesterType=0&babyId=1304672468777553921
+ */
 </script>
 
 <template>
@@ -74,15 +175,18 @@ function confirm() {
         backgroundImage: `url(${getImageUrl('complex_list_bgi_top')})`,
       }"
     >
-      <div class="gr-info-title">陈安好成长记录</div>
-      <img :src="getImageUrl('activity_bgi_05')" alt="" class="gr-info-ava" />
+      <div class="gr-info-title">{{ babyDetail.babyName }}成长记录</div>
+      <img :src="babyDetail.headImg" alt="" class="gr-info-ava" />
       <div
         class="gr-info-name"
         :style="{ backgroundImage: `url(${getImageUrl('detail_name')})` }"
       >
-        张星星
+        {{ babyDetail.babyName }}
       </div>
-      <div class="gr-info-level">中班下学期</div>
+      <div class="gr-info-level">
+        {{ formatClassLevelCode(classLevelCode)
+        }}{{ formatSemesterType(semesterType) }}
+      </div>
       <div class="gr-info-class">
         <img
           v-for="type in TYPE_LIST"
@@ -99,69 +203,105 @@ function confirm() {
 
     <div class="gr-class">
       <div
-        v-for="item in classList"
+        :class="['gr-class-item', currentId === '' && 'selected']"
+        @click="switchClass('')"
+      >
+        全部
+      </div>
+      <div
+        v-for="item in domainList"
         :key="item.id"
         :class="['gr-class-item', item.id === currentId && 'selected']"
-        @click="currentId = item.id"
+        @click="switchClass(item.id)"
       >
-        {{ item.title }}
+        {{ item.domainAbilityName }}
       </div>
     </div>
 
-    <div class="gr-item">
+    <div v-for="item in babyRecordList" :key="item.id" class="gr-item">
       <div class="gr-item-time">
         <img :src="getImageUrl('time_logo')" alt="" />
-        <div>2023年3月20日</div>
+        <div>{{ item.recordDate }}</div>
       </div>
       <div class="gr-item-detail">
         <div class="info">
           <div class="info-left">
-            <img :src="getImageUrl('class_logo')" alt="" />
-            <div>张老师</div>
+            <img :src="item.teacherHeadImg" alt="" />
+            <div>{{ item.teacherName }}老师</div>
           </div>
           <div
-            v-if="true"
+            v-if="item.joinSemester"
+            class="info-right flex-center joined"
+            @click="openConfirm(item.id, 0)"
+          >
+            <img :src="getImageUrl('joined_report')" alt="" />
+            <div>已加入报告</div>
+          </div>
+          <div
+            v-else
             class="info-right flex-center"
-            @click="showConfirm = true"
+            @click="joinSemesterReport(item.id, 1)"
           >
             <img :src="getImageUrl('add_report')" alt="" />
             <div>加入报告</div>
           </div>
-          <div v-else class="info-right flex-center joined">
-            <img :src="getImageUrl('joined_report')" alt="" />
-            <div>已加入报告</div>
-          </div>
         </div>
-        <div class="dialogue">
-          <img
-            src="https://img.luojigou.vip/FnXKF9KCxHWvcJEZFD8LpetRMNuA"
-            alt=""
-            class="dialogue-ava"
-          />
+        <div
+          v-for="(ability, abilityIndex) in sliceAbility(item)"
+          :key="abilityIndex"
+          class="dialogue"
+        >
+          <img :src="ability.abilityIconUrl" alt="" class="dialogue-ava" />
           <div class="dialogue-desc">
-            <div class="dialogue-desc-title">逻辑思维通用领域-观察</div>
+            <div class="dialogue-desc-title">
+              {{ ability.domainName }}-{{ ability.abilityName }}
+            </div>
             <div class="dialogue-desc-text">
-              行为描述行为描述行为描述行为描述行为描述行为描述行为描述行为描述行为行为描述行为描述行为描述行为描述行为描述行为描述行为描述行为描述行为
+              {{ ability.behave }}
             </div>
           </div>
         </div>
 
-        <img :src="getImageUrl('dialogue_all')" alt="" class="all" />
-        <div class="images">
+        <img
+          v-if="!item.isExpand"
+          :src="getImageUrl('dialogue_all')"
+          alt=""
+          class="all"
+          @click="item.isExpand = true"
+        />
+
+        <div
+          v-if="isHas(item.story.images)"
+          :class="['images', item.isExpand && 'mt40']"
+        >
           <div
-            v-for="img in 3"
-            :key="img"
+            v-for="(img, imgIndex) in item.story.images.slice(0, 3)"
+            :key="imgIndex"
             :style="{
-              backgroundImage: `url(${getImageUrl('class_logo')})`,
+              backgroundImage: `url(${img})`,
             }"
+            @click="imagePreview(item.story.images, imgIndex)"
           >
-            <div v-if="img === 3" class="flex-center">+5</div>
+            <div
+              v-if="imgIndex === 2 && item.story.images.length > 3"
+              class="flex-center"
+            >
+              +{{ item.story.images.length - 3 }}
+            </div>
           </div>
         </div>
+
+        <video
+          v-else-if="isHas(item.story.videos)"
+          :src="item.story.videos[0]"
+          controls
+          :poster="item.story.videos[0] + '?vframe/jpg/offset/1'"
+          class="video"
+        ></video>
       </div>
     </div>
 
-    <div class="gr-look flex-center" @click="show = true">
+    <div class="gr-look flex-center" @click="lookReport">
       <div class="gr-look-text">查看综合报告</div>
       <img :src="getImageUrl('back_solid')" alt="" class="gr-look-logo" />
     </div>
@@ -226,6 +366,7 @@ function confirm() {
       height: 60px;
       border-radius: 50%;
       border: 4px solid rgba(255, 255, 255, 0.3);
+      object-fit: cover;
     }
 
     &-name {
@@ -469,6 +610,7 @@ function confirm() {
           border-radius: 10px 10px 10px 10px;
 
           &-title {
+            width: 255px;
             height: 20px;
             font-size: 16px;
             font-family:
@@ -477,6 +619,7 @@ function confirm() {
             font-weight: 600;
             color: #333333;
             line-height: 20px;
+            @include single-hide();
           }
 
           &-text {
@@ -505,11 +648,10 @@ function confirm() {
         align-items: center;
         flex-wrap: wrap;
         margin-left: 8px;
-        margin-top: 6px;
+        margin-top: 14px;
 
         > div {
           margin-left: 8px;
-          margin-top: 8px;
           width: 98px;
           height: 98px;
           border-radius: 8px 8px 8px 8px;
@@ -530,6 +672,16 @@ function confirm() {
             color: #ffffff;
           }
         }
+      }
+
+      .mt40 {
+        margin-top: 20px;
+      }
+
+      .video {
+        margin: 14px auto 0;
+        width: 310px;
+        border-radius: 15px;
       }
     }
   }

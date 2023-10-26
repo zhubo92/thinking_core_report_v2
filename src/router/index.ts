@@ -5,32 +5,47 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/customize/ComplexReportDetail",
+      redirect: "/customize/GrowthRecord",
     },
     {
       path: "/report",
       name: "report",
       component: () => import("@/views/report/EvaluationReport.vue"),
+      meta: {
+        title: "思维芯测评",
+      },
     },
     {
-      path: "/customize/ComplexReportDetail",
-      name: "ComplexReportDetail",
-      component: () => import("@/views/customize/ComplexReportDetail.vue"),
+      path: "/customize/SemesterReport",
+      name: "SemesterReport",
+      component: () => import("@/views/customize/SemesterReport.vue"),
+      meta: {
+        title: "行为记录综合报告",
+      },
     },
     {
       path: "/customize/ComplexReportList",
       name: "ComplexReportList",
       component: () => import("@/views/customize/ComplexReportList.vue"),
+      meta: {
+        title: "行为记录综合报告幼儿列表",
+      },
     },
     {
       path: "/customize/GrowthRecord",
       name: "GrowthRecord",
       component: () => import("@/views/customize/GrowthRecord.vue"),
+      meta: {
+        title: "成长记录",
+      },
     },
     {
-      path: "/customize/SingleRecord",
-      name: "SingleRecord",
-      component: () => import("@/views/customize/SingleRecord.vue"),
+      path: "/customize/SingleReport",
+      name: "SingleReport",
+      component: () => import("@/views/customize/SingleReport.vue"),
+      meta: {
+        title: "行为记录单次报告",
+      },
     },
   ],
 });

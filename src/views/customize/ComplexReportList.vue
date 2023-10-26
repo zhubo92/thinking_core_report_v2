@@ -1,39 +1,74 @@
 <script setup lang="ts">
-import { getImageUrl, returnAppPage } from "@/utils";
+import { getAppToken, getImageUrl, returnAppPage } from "@/utils";
 import AddReport from "@/views/customize/components/AddReport.vue";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-
-interface IItem {
-  id: number;
-  ava: string;
-}
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useCustomizeStore } from "@/store";
+import { storeToRefs } from "pinia";
+import { IBabies } from "@/types/customize";
 
 const router = useRouter();
 
-const list = ref<IItem[]>([
-  { id: 1, ava: getImageUrl("activity_bgi_04") },
-  { id: 2, ava: getImageUrl("activity_bgi_03") },
-  { id: 3, ava: getImageUrl("activity_bgi_02") },
-  { id: 4, ava: getImageUrl("activity_bgi_01") },
-  { id: 5, ava: getImageUrl("activity_bgi_01") },
-  { id: 6, ava: getImageUrl("activity_bgi_01") },
-]);
+const { classId, classLevelCode, gameType, recordType, semesterType } =
+  useRoute().query;
+const customizeStore = useCustomizeStore();
+
+const { recordData, babyList } = storeToRefs(customizeStore);
+const { getSemesterBabies } = customizeStore;
 
 const show = ref<boolean>(false);
 
 function goAdd() {
   show.value = false;
   console.log("goAdd");
+  router.push({
+    path: "/customize/GrowthRecord",
+    query: {},
+  });
 }
 
-function goDetail(item: IItem) {
-  if (item.id === 2) {
+function goDetail(item: IBabies) {
+  if (item.totalRecord === 0) {
     show.value = true;
   } else {
-    router.push("/customize/complex/ReportDetail");
+    router.push("/customize/ComplexReportDetail");
   }
 }
+
+function formatTeacherNames(names: string[]) {
+  let str = "";
+  names.map((name, nameIndex) => {
+    if (nameIndex !== 0) {
+      str += "、";
+    }
+    str += `${name}老师`;
+  });
+  return str;
+}
+
+onMounted(async () => {
+  // todo await
+  getAppToken();
+
+  if (
+    typeof classId === "string" &&
+    typeof classLevelCode === "string" &&
+    typeof gameType === "string" &&
+    typeof recordType === "string" &&
+    typeof semesterType === "string"
+  )
+    await getSemesterBabies({
+      classId,
+      classLevelCode,
+      gameType,
+      recordType,
+      semesterType,
+    });
+});
+
+/**
+ * http://192.168.1.17:8989/#/customize/ComplexReportList?classId=1304705777133330433&classLevelCode=0&gameType=2&recordType=1&semesterType=0
+ */
 </script>
 
 <template>
@@ -53,15 +88,21 @@ function goDetail(item: IItem) {
     >
       <div class="rl-info-item">
         <div class="label">评估对象</div>
-        <div class="value">逻辑狗中班23名幼儿</div>
+        <div class="value">
+          {{ recordData.className }}{{ recordData.totalBaby }}名幼儿
+        </div>
       </div>
       <div class="rl-info-item">
         <div class="label">评估时段</div>
-        <div class="value">2023.2.1-2023.3.1</div>
+        <div class="value">
+          {{ recordData.startDate }}至{{ recordData.endDate }}
+        </div>
       </div>
       <div class="rl-info-item">
         <div class="label">参与评估老师</div>
-        <div class="value">逻小熊老师、逻辑狗老师</div>
+        <div class="value">
+          {{ formatTeacherNames(recordData.teacherNames) }}
+        </div>
       </div>
     </div>
     <div class="rl-content">
@@ -72,30 +113,31 @@ function goDetail(item: IItem) {
       />
       <div class="rl-content-list">
         <div
-          v-for="item in list"
-          :key="item.id"
+          v-for="item in babyList"
+          :key="item.babyId"
           class="item flex-center"
           @click="goDetail(item)"
         >
           <div
             class="item-avatar"
-            :style="{ backgroundImage: `url(${item.ava})` }"
+            :style="{ backgroundImage: `url(${item.babyHeadImg})` }"
           >
             <img
-              v-if="item.id !== 2"
+              v-if="item.totalRecord !== 0"
               :src="getImageUrl('check_mark')"
               alt=""
               class="item-avatar-logo"
             />
           </div>
-          <div :class="['item-name', item.id === 2 && 'grey']">李晓明</div>
-          <div class="item-num">5条</div>
+          <div :class="['item-name', item.totalRecord === 0 && 'grey']">
+            李晓明
+          </div>
+          <div class="item-num">{{ item.totalRecord }}条</div>
         </div>
       </div>
     </div>
-
-    <AddReport :show="show" @close="show = false" @goAdd="goAdd" />
   </div>
+  <AddReport :show="show" @close="show = false" @goAdd="goAdd" />
 </template>
 
 <style scoped lang="scss">
@@ -164,7 +206,7 @@ function goDetail(item: IItem) {
       }
 
       .value {
-        height: 24px;
+        width: 195px;
         font-size: 14px;
         font-family:
           PingFang SC-Medium,
@@ -173,6 +215,7 @@ function goDetail(item: IItem) {
         font-weight: 500;
         color: #ffffff;
         line-height: 24px;
+        @include multi-hide(2);
       }
     }
 

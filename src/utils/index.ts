@@ -1,6 +1,7 @@
 // import html2canvas from 'html2canvas';
 import { showImagePreview } from "vant";
 import { setToken } from "@/utils/storage.ts";
+import router from "@/router";
 export function getImageUrl(name: string) {
   return new URL(`../assets/images/${name}.png`, import.meta.url).href;
 }
@@ -34,7 +35,11 @@ export function popPage() {
  * 家园共育返回上一页
  */
 export function returnAppPage() {
-  callAppFc("returnAppPage");
+  try {
+    (window as any).returnAppPage.postMessage(JSON.stringify({}));
+  } catch (err) {
+    router.go(-1);
+  }
 }
 
 /**

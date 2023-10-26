@@ -32,7 +32,7 @@ export interface ISingleRecord {
   teacherName: string;
   babyNames: string[];
   joinSemester: number;
-  story: IStory;
+  story: IStory | null;
   domainList: IDomain[];
 }
 
@@ -52,4 +52,75 @@ export function defaultSingleRecord(): ISingleRecord {
     },
     domainList: [],
   };
+}
+
+export interface IRecordData {
+  className: string;
+  totalBaby: number;
+  startDate: string;
+  endDate: string;
+  teacherNames: string[];
+}
+export interface IBabies {
+  babyId: string;
+  classId: string;
+  babyName: string;
+  babyHeadImg: string;
+  totalRecord: number;
+  linkUrl: null | string;
+}
+
+export interface IBabyDetail {
+  id: string;
+  sex: 1 | 2;
+  babyName: string;
+  babyBirthday: string;
+  createTime: string;
+  updateTime: string;
+  headImg: string;
+  hasScan: 0 | 1;
+  state: number;
+  relationName: null | string;
+}
+
+export function defaultBabyDetail(): IBabyDetail {
+  return {
+    id: "",
+    sex: 2,
+    babyName: "",
+    babyBirthday: "",
+    createTime: "",
+    updateTime: "",
+    headImg: "",
+    hasScan: 1,
+    state: 1,
+    relationName: null,
+  };
+}
+
+interface IBabyRecordAbility {
+  domainName: string;
+  abilityName: string;
+  abilityIconUrl: string;
+  behave: string;
+}
+export interface IBabyRecord {
+  id: string;
+  joinSemester: 1 | 0;
+  recordDate: string;
+  teacherName: string;
+  teacherHeadImg: string;
+  story: IStory;
+  abilityList: IBabyRecordAbility[];
+  isExpand?: boolean;
+}
+
+export interface IDomainDetail {
+  dataStatus: 1 | 0;
+  createTime: string;
+  updateTime: string;
+  id: string;
+  parentId: string;
+  domainAbilityName: string;
+  iconUrl: string;
 }
