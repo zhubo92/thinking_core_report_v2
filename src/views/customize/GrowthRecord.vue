@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { getAppToken, getImageUrl, imagePreview, returnAppPage } from "@/utils";
-import { onMounted, ref } from "vue";
+import { returnAppPage, getAppToken, getImageUrl, imagePreview } from "@/utils";
+import { onMounted, onUnmounted, ref } from "vue";
 import { showToast } from "vant";
 import AddReport from "@/views/customize/components/AddReport.vue";
 import ConfirmJoin from "@/views/customize/components/ConfirmJoin.vue";
@@ -20,8 +20,13 @@ const TYPE_LIST: IType[] = [
   { id: 2, name: "question_class", isHas: false },
 ];
 const router = useRouter();
-const { babyId, classId, classLevelCode, gameType, semesterType } =
-  useRoute().query;
+const {
+  b: babyId,
+  c: classId,
+  l: classLevelCode,
+  g: gameType,
+  s: semesterType,
+} = useRoute().query;
 
 const customizeStore = useCustomizeStore();
 
@@ -70,11 +75,12 @@ function lookReport() {
     router.push({
       path: "/customize/SemesterReport",
       query: {
-        babyId,
-        classId,
-        classLevelCode,
-        gameType,
-        semesterType,
+        b: babyId,
+        c: classId,
+        l: classLevelCode,
+        // g: gameType,
+        s: semesterType,
+        // r: 1,
       },
     });
   } else {
@@ -116,10 +122,34 @@ async function getMore() {
   }
 }
 
+function scrollBottom() {
+  let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+  let clientHeight = document.documentElement.clientHeight;
+  let scrollHeight = document.documentElement.scrollHeight;
+  if (scrollTop + clientHeight + 10 >= scrollHeight) {
+    console.log("滚动到底部了");
+
+    if (babyRecordTotal.value <= babyRecordList.value.length) {
+      showToast("没有更多了");
+    } else {
+      getMore();
+    }
+  }
+}
+
+function goSingle(item: IBabyRecord) {
+  router.push({
+    path: "/customize/SingleReport",
+    query: {
+      b: babyId,
+      i: item.id,
+    },
+  });
+}
+
 onMounted(async () => {
   babyRecordList.value = [];
-  // todo await
-  getAppToken();
+  await getAppToken();
 
   if (
     typeof babyId === "string" &&
@@ -142,25 +172,20 @@ onMounted(async () => {
     });
   }
 
-  window.addEventListener("scroll", () => {
-    let scrollTop =
-      document.documentElement.scrollTop || document.body.scrollTop;
-    let clientHeight = document.documentElement.clientHeight;
-    let scrollHeight = document.documentElement.scrollHeight;
-    if (scrollTop + clientHeight + 10 >= scrollHeight) {
-      console.log("滚动到底部了");
+  window.addEventListener("scroll", scrollBottom);
+});
 
-      if (babyRecordTotal.value <= babyRecordList.value.length) {
-        showToast("没有更多了");
-      } else {
-        getMore();
-      }
-    }
-  });
+onUnmounted(() => {
+  window.removeEventListener("scroll", scrollBottom);
 });
 
 /**
- * http://192.168.1.17:8989/#/customize/GrowthRecord?classId=1304705777133330433&classLevelCode=0&gameType=2&recordType=1&semesterType=0&babyId=1304672468777553921
+ * b: babyId,
+ * c: classId,
+ * l: classLevelCode,
+ * g: gameType,
+ * s: semesterType,
+ * http://192.168.1.17:8989/#/customize/GrowthRecord?c=1304705777133330433&l=0&g=2&r=1&s=0&b=1304672468777553921
  */
 </script>
 
@@ -218,7 +243,12 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div v-for="item in babyRecordList" :key="item.id" class="gr-item">
+    <div
+      v-for="item in babyRecordList"
+      :key="item.id"
+      class="gr-item"
+      @click="goSingle(item)"
+    >
       <div class="gr-item-time">
         <img :src="getImageUrl('time_logo')" alt="" />
         <div>{{ item.recordDate }}</div>
@@ -232,7 +262,7 @@ onMounted(async () => {
           <div
             v-if="item.joinSemester"
             class="info-right flex-center joined"
-            @click="openConfirm(item.id, 0)"
+            @click.stop="openConfirm(item.id, 0)"
           >
             <img :src="getImageUrl('joined_report')" alt="" />
             <div>已加入报告</div>
@@ -240,12 +270,13 @@ onMounted(async () => {
           <div
             v-else
             class="info-right flex-center"
-            @click="joinSemesterReport(item.id, 1)"
+            @click.stop="joinSemesterReport(item.id, 1)"
           >
             <img :src="getImageUrl('add_report')" alt="" />
             <div>加入报告</div>
           </div>
         </div>
+
         <div
           v-for="(ability, abilityIndex) in sliceAbility(item)"
           :key="abilityIndex"
@@ -267,7 +298,7 @@ onMounted(async () => {
           :src="getImageUrl('dialogue_all')"
           alt=""
           class="all"
-          @click="item.isExpand = true"
+          @click.stop="item.isExpand = true"
         />
 
         <div
@@ -280,7 +311,7 @@ onMounted(async () => {
             :style="{
               backgroundImage: `url(${img})`,
             }"
-            @click="imagePreview(item.story.images, imgIndex)"
+            @click.stop="imagePreview(item.story.images, imgIndex)"
           >
             <div
               v-if="imgIndex === 2 && item.story.images.length > 3"
@@ -297,6 +328,7 @@ onMounted(async () => {
           controls
           :poster="item.story.videos[0] + '?vframe/jpg/offset/1'"
           class="video"
+          @click.stop
         ></video>
       </div>
     </div>
@@ -605,7 +637,7 @@ onMounted(async () => {
           z-index: 1;
           margin-top: -21px;
           margin-left: 21px;
-          width: 299px;
+          width: 294px;
           background: #eef3fd;
           border-radius: 10px 10px 10px 10px;
 
@@ -680,7 +712,7 @@ onMounted(async () => {
 
       .video {
         margin: 14px auto 0;
-        width: 310px;
+        width: 311px;
         border-radius: 15px;
       }
     }

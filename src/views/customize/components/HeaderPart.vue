@@ -3,8 +3,9 @@ import { getImageUrl, returnAppPage } from "@/utils/index.js";
 import { useCustomizeStore } from "@/store";
 import { storeToRefs } from "pinia";
 const customizeStore = useCustomizeStore();
-const { isSendToParent } = storeToRefs(customizeStore);
-const { sendToParent } = customizeStore;
+const { singleRecord } = storeToRefs(customizeStore);
+
+const emit = defineEmits(["send"]);
 </script>
 
 <template>
@@ -13,9 +14,9 @@ const { sendToParent } = customizeStore;
     <div class="header-back" @click="returnAppPage">
       <img :src="getImageUrl('return_button')" alt="" class="header-back-img" />
     </div>
-    <div v-if="true" class="header-send" @click="sendToParent">
+    <div v-if="true" class="header-send" @click="emit('send')">
       <div class="header-send-btn flex-center">
-        {{ isSendToParent ? "已发送" : "发送家长" }}
+        {{ singleRecord.sendReport ? "已发送" : "发送家长" }}
       </div>
     </div>
     <div v-else></div>

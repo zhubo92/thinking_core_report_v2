@@ -9,47 +9,70 @@ import { IBabies } from "@/types/customize";
 
 const router = useRouter();
 
-const { classId, classLevelCode, gameType, recordType, semesterType } =
-  useRoute().query;
+const {
+  c: classId,
+  l: classLevelCode,
+  g: gameType,
+  r: recordType,
+  s: semesterType,
+} = useRoute().query;
 const customizeStore = useCustomizeStore();
 
 const { recordData, babyList } = storeToRefs(customizeStore);
 const { getSemesterBabies } = customizeStore;
 
 const show = ref<boolean>(false);
+const temporaryBabyId = ref<string>("");
 
 function goAdd() {
   show.value = false;
   console.log("goAdd");
   router.push({
     path: "/customize/GrowthRecord",
-    query: {},
+    query: {
+      b: temporaryBabyId.value,
+      c: classId,
+      l: classLevelCode,
+      g: gameType,
+      s: semesterType,
+    },
   });
 }
 
 function goDetail(item: IBabies) {
+  temporaryBabyId.value = item.babyId;
+
   if (item.totalRecord === 0) {
     show.value = true;
   } else {
-    router.push("/customize/ComplexReportDetail");
+    router.push({
+      path: "/customize/SemesterReport",
+      query: {
+        b: temporaryBabyId.value,
+        c: classId,
+        l: classLevelCode,
+        // g: gameType,
+        s: semesterType,
+        // r: 1,
+      },
+    });
   }
 }
 
 function formatTeacherNames(names: string[]) {
+  console.log("names", names);
   let str = "";
   names.map((name, nameIndex) => {
     if (nameIndex !== 0) {
       str += "、";
     }
-    str += `${name}老师`;
+    str += `${name}`;
   });
   return str;
 }
 
 onMounted(async () => {
-  // todo await
-  getAppToken();
-
+  await getAppToken();
   if (
     typeof classId === "string" &&
     typeof classLevelCode === "string" &&
@@ -67,7 +90,12 @@ onMounted(async () => {
 });
 
 /**
- * http://192.168.1.17:8989/#/customize/ComplexReportList?classId=1304705777133330433&classLevelCode=0&gameType=2&recordType=1&semesterType=0
+ * c: classId
+ * l: classLevelCode
+ * g: gameType
+ * r: recordType
+ * s: semesterType
+ * http://192.168.1.17:8989/#/customize/ComplexReportList?c=1304705777133330433&l=2&g=2&r=1&s=0
  */
 </script>
 
@@ -95,10 +123,10 @@ onMounted(async () => {
       <div class="rl-info-item">
         <div class="label">评估时段</div>
         <div class="value">
-          {{ recordData.startDate }}至{{ recordData.endDate }}
+          {{ recordData.startDate }}-{{ recordData.endDate }}
         </div>
       </div>
-      <div class="rl-info-item">
+      <div class="rl-info-item" v-if="recordData.teacherNames.length !== 0">
         <div class="label">参与评估老师</div>
         <div class="value">
           {{ formatTeacherNames(recordData.teacherNames) }}
@@ -130,7 +158,7 @@ onMounted(async () => {
             />
           </div>
           <div :class="['item-name', item.totalRecord === 0 && 'grey']">
-            李晓明
+            {{ item.babyName }}
           </div>
           <div class="item-num">{{ item.totalRecord }}条</div>
         </div>
@@ -267,6 +295,7 @@ onMounted(async () => {
         &-name {
           margin-top: 4px;
           margin-bottom: 4px;
+          width: 60px;
           height: 18px;
           font-size: 14px;
           font-family:
@@ -276,6 +305,8 @@ onMounted(async () => {
           font-weight: 500;
           color: #333333;
           line-height: 18px;
+          text-align: center;
+          @include single-hide();
         }
 
         .grey {

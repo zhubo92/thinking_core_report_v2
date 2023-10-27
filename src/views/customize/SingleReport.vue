@@ -7,11 +7,11 @@ import { storeToRefs } from "pinia";
 import { IAbility } from "@/types/customize.d";
 import { computed, onMounted } from "vue";
 
-const { babyId, id } = useRoute().query;
+const { b: babyId, i: id } = useRoute().query;
 const customizeStore = useCustomizeStore();
 
 const { singleRecord } = storeToRefs(customizeStore);
-const { getSingleRecord } = customizeStore;
+const { getSingleRecord, sendSingleRecord } = customizeStore;
 
 const isImages = computed(() => {
   return singleRecord.value.story?.images.length !== 0;
@@ -43,19 +43,31 @@ function formatNames(names: string[]) {
   return str;
 }
 
+function send() {
+  if (typeof babyId === "string" && typeof id === "string")
+    sendSingleRecord({
+      babyId,
+      id,
+      recordType: "1",
+    });
+}
+
 onMounted(async () => {
   if (typeof babyId === "string" && typeof id === "string")
     await getSingleRecord(babyId, id);
 });
 
 /**
- * http://192.168.1.17:8989/#/customize/SingleReport?babyId=1304672468777553921&id=1716737882201264130
+ * b: babyId
+ * i: recordId
+ * http://192.168.1.17:8989/#/customize/SingleReport?b=1304672468777553921&i=1716737882201264130
  */
 </script>
 
 <template>
   <div class="single-report">
-    <HeaderPart />
+    <HeaderPart @send="send" />
+
     <div class="sr">
       <div class="sr-top">
         <img :src="getImageUrl('single_title')" alt="" class="sr-top-title" />
@@ -143,7 +155,7 @@ onMounted(async () => {
                 ? '17px 17px 0 0'
                 : abilityIndex === item.abilityList.length - 1
                 ? '0 0 17px 17px'
-                : 'none'
+                : '0'
             }`,
             borderTop: `${abilityIndex === 0 ? '4px solid #b6dcff' : 'none'}`,
             borderBottom: `${
@@ -169,7 +181,7 @@ onMounted(async () => {
           <div class="desc">{{ ability.description.growth }}</div>
           <img :src="getImageUrl('desc_name_02')" alt="" class="name" />
           <div class="desc green">{{ ability.description.behave }}</div>
-          <img :src="getImageUrl('desc_name_03')" alt="" class="name" />
+          <img :src="getImageUrl('family_title')" alt="" class="name" />
           <div class="strategy">
             <div class="strategy-title">一日活动</div>
             <div class="strategy-content">

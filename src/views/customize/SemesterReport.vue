@@ -1,57 +1,23 @@
 <script setup lang="ts">
 import { getImageUrl, imagePreview, returnAppPage } from "@/utils";
-import { ref } from "vue";
+import { useRoute } from "vue-router";
+import { useCustomizeStore } from "@/store";
+import { storeToRefs } from "pinia";
+import { onMounted } from "vue";
+import { formatClassLevelCode, formatSemesterType } from "@/utils/filter.ts";
 
-interface IItem {
-  id: number;
-  title: string;
-  desc: string;
-}
+const {
+  b: babyId,
+  c: classId,
+  l: classLevelCode,
+  // g: gameType,
+  s: semesterType,
+  // r: recordType,
+} = useRoute().query;
+const customizeStore = useCustomizeStore();
 
-const list = ref<IItem[]>([
-  {
-    id: 0,
-    title: "科学领域",
-    desc: "评估了观察、好奇和探索、模仿力与创造力等9个能力",
-  },
-  {
-    id: 1,
-    title: "语言领域",
-    desc: "评估了观察、好奇和探索、模仿力与创造力等9个能力",
-  },
-  {
-    id: 2,
-    title: "其他领域",
-    desc: "评估了观察、好奇和探索、模仿力与创造力等9个能力",
-  },
-  {
-    id: 3,
-    title: "逻辑思维通用领域",
-    desc: "评估了观察、好奇和探索、模仿力与创造力等9个能力",
-  },
-  {
-    id: 4,
-    title: "艺术领域",
-    desc: "评估了观察、好奇和探索、模仿力与创造力等9个能力",
-  },
-  {
-    id: 5,
-    title: "社会领域",
-    desc: "评估了观察、好奇和探索、模仿力与创造力等9个能力",
-  },
-]);
-
-const imageList = ref<string[]>([
-  getImageUrl("field_logo_00"),
-  getImageUrl("field_logo_01"),
-  getImageUrl("field_logo_02"),
-  getImageUrl("field_logo_03"),
-]);
-
-const textList = ref<string[]>([
-  "家长可以和幼儿一起发现生活中有简单模式的事物。（如：蛋糕和规律是水果-蛋糕-水果-蛋糕相间的、衣服的条纹颜色规律是白-黑-白-黑）；",
-  "家长可以和幼儿一起发现生活中有简单模式的事物。（如：蛋糕和规律是水果-蛋糕-水果-蛋糕相间的、衣服的条纹颜色规律是白-黑-白-黑）；",
-]);
+const { semesterReport } = storeToRefs(customizeStore);
+const { getSemesterRecord, sendSemesterRecord } = customizeStore;
 
 function getFieldLogo(title: string) {
   const arr = ["通用", "科学", "艺术", "语言", "社会"];
@@ -59,30 +25,75 @@ function getFieldLogo(title: string) {
   index = index === -1 ? 0 : index;
   return getImageUrl(`field_logo_0${index}`);
 }
+
+function isHas(content: string[]) {
+  return Array.isArray(content) && content.length > 0;
+}
+
+function formatFamily(name: string) {
+  let arr = name.split("\n");
+  return arr[arr.length - 1] === "" ? arr.slice(0, arr.length - 1) : arr;
+}
+
+function send() {
+  if (
+    typeof babyId === "string" &&
+    typeof classId === "string" &&
+    typeof classLevelCode === "string" &&
+    typeof semesterType === "string"
+  )
+    sendSemesterRecord({
+      babyId,
+      classId,
+      classLevelCode,
+      semesterType,
+      recordType: "1",
+    });
+}
+
+onMounted(async () => {
+  if (
+    typeof babyId === "string" &&
+    typeof classId === "string" &&
+    typeof classLevelCode === "string" &&
+    typeof semesterType === "string"
+  )
+    await getSemesterRecord({ babyId, classId, classLevelCode, semesterType });
+});
 </script>
 
 <template>
-  <div class="back" @click="returnAppPage">
-    <img :src="getImageUrl('back_solid')" alt="" class="back-img" />
-  </div>
   <div class="report-detail rd">
+    <div class="rd-back" @click="returnAppPage">
+      <img :src="getImageUrl('back_solid')" alt="" class="rd-back-img" />
+    </div>
+    <div class="rd-send" @click="send">
+      <div class="rd-send-btn flex-center">
+        {{ semesterReport.sendReport ? "已发送" : "发送家长" }}
+      </div>
+    </div>
     <div class="rd-bgc"></div>
     <div
       class="rd-info"
       :style="{ backgroundImage: `url(${getImageUrl('detail_info')})` }"
     >
-      <img :src="getImageUrl('class_logo')" alt="" class="rd-info-avatar" />
+      <img :src="semesterReport.babyHeadImg" alt="" class="rd-info-avatar" />
       <div
         class="rd-info-name"
         :style="{ backgroundImage: `url(${getImageUrl('detail_name')})` }"
       >
-        张星星
+        {{ semesterReport.babyName }}
       </div>
-      <div class="rd-info-garden">北京思维魔法逻辑狗幼儿园</div>
-      <div class="rd-info-class">逻辑狗中二班</div>
+      <div class="rd-info-garden">{{ semesterReport.schoolName }}</div>
+      <div class="rd-info-class">
+        {{ formatClassLevelCode(classLevelCode)
+        }}{{ formatSemesterType(semesterType) }}
+      </div>
       <div class="rd-info-time">
         <span>评估时段</span>
-        <span>2023.2.1-2023.3.1</span>
+        <span>
+          {{ semesterReport.startDate }}-{{ semesterReport.endDate }}
+        </span>
       </div>
     </div>
     <div class="rd-field grid_bgi">
@@ -90,55 +101,135 @@ function getFieldLogo(title: string) {
         class="rd-field-title"
         :style="{ backgroundImage: `url(${getImageUrl('field_title')})` }"
       >
-        <p>中班幼儿分领域评估概括</p>
+        <p>{{ formatClassLevelCode(classLevelCode) }}幼儿分领域评估概括</p>
         <div></div>
       </div>
-      <div v-for="item in list" :key="item.id" class="rd-field-item">
-        <img :src="getFieldLogo(item.title)" alt="" class="logo" />
+      <div
+        v-for="(item, index) in semesterReport.domainAbilityNameList"
+        :key="index"
+        class="rd-field-item"
+      >
+        <img :src="getFieldLogo(item.domainName)" alt="" class="logo" />
         <div class="info">
-          <div class="info-title">{{ item.title }}</div>
+          <div class="info-title">{{ item.domainName }}</div>
           <div class="info-desc">
-            评估了<span>观察</span>、
-            <span>好奇和探索</span>、<span>模仿力与创造力</span>等9个能力
+            评估了
+            <div
+              v-for="(a, aIndex) in item.abilityNameList.slice(0, 3)"
+              :key="aIndex"
+            >
+              <span>{{ a }}</span>
+              <i
+                v-if="
+                  aIndex !== item.abilityNameList.length - 1 && aIndex !== 2
+                "
+              >
+                、
+              </i>
+            </div>
+            <span v-if="item.abilityNameList.length > 3">
+              等{{ item.abilityNameList.length }}个能力
+            </span>
           </div>
         </div>
       </div>
     </div>
-    <div class="rd-other grid_bgi">
-      <div class="rd-other-title">
-        <img :src="getImageUrl('other_title')" alt="" />
-        <div class="time">记录时间：2023-01-23</div>
-      </div>
-      <div class="rd-other-name">
-        <div>逻辑思维通用领域-观察领域</div>
-        <img :src="getImageUrl('other_logo')" alt="" />
-      </div>
-      <div class="rd-other-remark">
-        <div class="images">
+
+    <div
+      v-for="(item, index) in semesterReport.domainDataList"
+      :key="index"
+      class="rd-part"
+    >
+      <div class="domain">{{ item.domainName }}</div>
+      <div
+        v-for="(ability, abilityIndex) in item.recordList"
+        :key="abilityIndex"
+        class="ability grid_bgi"
+        :style="{
+          borderRadius: `${
+            item.recordList.length === 1
+              ? '17px'
+              : abilityIndex === item.recordList.length - 1
+              ? '0 0 17px 17px'
+              : abilityIndex === 0
+              ? '17px 17px 0 0'
+              : '0'
+          }`,
+          borderTop: `${abilityIndex === 0 ? '4px solid #b6dcff' : 'none'}`,
+          borderBottom: `${
+            abilityIndex === item.recordList.length - 1
+              ? '4px solid #b6dcff'
+              : 'none'
+          }`,
+          boxShadow: `${
+            abilityIndex === 0 ? '0 1px 6px 0 rgba(42, 105, 253, 0.16)' : 'none'
+          }`,
+        }"
+      >
+        <img
+          v-if="abilityIndex !== 0"
+          :src="getImageUrl('ability_gap')"
+          alt=""
+          class="ability-gap"
+        />
+        <div class="ability-title flex-center">
           <img
-            v-for="(img, imgIndex) in imageList"
-            :key="imgIndex"
-            :src="img"
+            :src="ability.abilityIconUrl"
             alt=""
-            @click="imagePreview(imageList, imgIndex)"
+            class="ability-title-logo"
           />
+          <div class="ability-title-text">{{ ability.abilityName }}</div>
         </div>
-        <div class="desc">
-          评估了
-          <span>观察</span>、 <span>好奇和探索</span>、
-          <span>模仿力与创造力</span>
-          等9个能力，其中3个是新晋观察技能
-        </div>
-      </div>
-      <img :src="getImageUrl('other_family')" alt="" class="rd-other-family" />
-      <div class="rd-other-text">
-        <div
-          v-for="(text, textIndex) in textList"
-          :key="textIndex"
-          class="text"
-        >
-          <div></div>
-          <p>{{ text }}</p>
+        <div class="container">
+          <div class="ability-time">
+            <img
+              :src="getImageUrl('clock_logo')"
+              alt=""
+              class="ability-time-logo"
+            />
+            <div class="ability-time-text">
+              记录时间：{{ ability.recordDate }}
+            </div>
+          </div>
+          <img
+            :src="getImageUrl('observation_records')"
+            alt=""
+            class="ability-name"
+          />
+          <div class="ability-content">
+            <div
+              v-if="isHas(ability.story.images)"
+              class="ability-content-images"
+            >
+              <img
+                v-for="(img, imgIndex) in ability.story.images"
+                :key="imgIndex"
+                :src="img"
+                alt=""
+                @click="imagePreview(ability.story.images, imgIndex)"
+              />
+            </div>
+            <video
+              v-if="isHas(ability.story.videos)"
+              :src="ability.story.videos[0]"
+              controls
+              :poster="ability.story.videos[0] + '?vframe/jpg/offset/1'"
+              class="ability-content-video"
+            ></video>
+            <div class="ability-content-text">
+              {{ ability.story.content }}
+            </div>
+          </div>
+          <img :src="getImageUrl('family_title')" alt="" class="ability-name" />
+          <div class="ability-family">
+            <div
+              v-for="(f, fIndex) in formatFamily(ability.education)"
+              :key="fIndex"
+              class="ability-family-item"
+            >
+              {{ f }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -146,26 +237,48 @@ function getFieldLogo(title: string) {
 </template>
 
 <style scoped lang="scss">
-.back {
-  position: fixed;
-  top: 44px;
-  left: 0;
-  z-index: 3;
-  padding: 8px 19px;
-
-  &-img {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
-  }
-}
-
 .rd {
   padding-top: 104px;
   padding-bottom: 46px;
   width: 100vw;
   min-height: 100vh;
   background-color: #a9cbff;
+
+  &-back {
+    position: fixed !important;
+    top: 44px;
+    left: 0;
+    z-index: 10 !important;
+    padding: 8px 19px;
+
+    &-img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+  }
+
+  &-send {
+    position: fixed !important;
+    top: 45px;
+    right: 0;
+    z-index: 10 !important;
+    padding: 6px 19px;
+
+    &-btn {
+      width: 78px;
+      height: 34px;
+      background: #e9f8ff;
+      box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.2026);
+      border-radius: 17px 17px 17px 17px;
+      font-size: 14px;
+      font-family:
+        PingFang SC-Medium,
+        PingFang SC;
+      font-weight: 600;
+      color: #233cd5;
+    }
+  }
 
   > div {
     position: relative;
@@ -238,7 +351,7 @@ function getFieldLogo(title: string) {
     }
 
     &-time {
-      margin-top: 12px;
+      margin-top: 2px;
       text-align: center;
 
       span {
@@ -255,6 +368,7 @@ function getFieldLogo(title: string) {
 
       span:nth-child(2) {
         margin-left: 14px;
+        margin-right: 40px;
       }
     }
   }
@@ -344,137 +458,129 @@ function getFieldLogo(title: string) {
           color: #666666;
           line-height: 16px;
 
-          span {
-            color: #2a69fd;
+          > div {
+            display: inline-block;
+
+            span {
+              color: #2a69fd;
+            }
           }
         }
       }
     }
   }
 
-  &-other {
-    padding: 24px 16px;
-    margin: 21px auto 0;
-    width: 343px;
-    box-shadow: 0 1px 6px 0 rgba(42, 105, 253, 0.16);
-    border-radius: 17px;
-
-    &-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      img {
-        width: 130px;
-        height: 30px;
-      }
-
-      .time {
-        height: 16px;
-        font-size: 12px;
-        font-family:
-          PingFang SC-Regular,
-          PingFang SC;
-        font-weight: 400;
-        color: #2a69fd;
-        line-height: 16px;
-      }
+  &-part {
+    .domain {
+      margin: 23px auto 0;
+      padding: 7px 28px;
+      width: fit-content;
+      background: #70a8ff;
+      border-radius: 16px 16px 0 0;
+      font-size: 18px;
+      font-family:
+        PingFang SC-Semibold,
+        PingFang SC;
+      font-weight: 600;
+      color: #ffffff;
     }
 
-    &-name {
-      display: flex;
-      align-items: center;
-      padding-left: 17px;
-      margin: 20px auto 0;
-      position: relative;
-      width: 311px;
-      height: 35px;
-      background: #b6dcff;
-      border-radius: 7px 7px 0 0;
+    .ability {
+      margin: 0 auto;
+      width: 343px;
+      border: 4px solid #b6dcff;
+      box-shadow: 0 1px 6px 0 rgba(42, 105, 253, 0.16);
+      border-radius: 17px 17px 17px 17px;
+      box-sizing: border-box;
+      overflow: hidden;
 
-      div {
-        height: 16px;
-        font-size: 14px;
-        font-family:
-          PingFang SC-Semibold,
-          PingFang SC;
-        font-weight: 600;
-        color: #2a69fd;
-        line-height: 16px;
-      }
+      &-title {
+        margin-top: 20px;
 
-      img {
-        position: absolute;
-        top: -16px;
-        right: 7px;
-        width: 32px;
-        height: 44px;
-      }
-    }
-
-    &-remark {
-      padding-bottom: 16px;
-      width: 311px;
-      background: #ecf9ff;
-      border-radius: 0 0 9px 9px;
-
-      .images {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        padding-left: 8px;
-        padding-top: 8px;
-
-        img {
-          margin-top: 8px;
-          margin-left: 8px;
-          width: 88px;
-          height: 88px;
+        &-logo {
+          width: 40px;
+          height: 40px;
           object-fit: cover;
         }
+
+        &-text {
+          margin-left: 7px;
+          height: 16px;
+          font-size: 18px;
+          font-family:
+            PingFang SC-Medium,
+            PingFang SC;
+          font-weight: 600;
+          color: #333333;
+          line-height: 16px;
+        }
       }
 
-      .desc {
-        margin-left: 16px;
-        margin-top: 16px;
-        width: 279px;
-        font-size: 14px;
-        font-family:
-          PingFang SC-Regular,
-          PingFang SC;
-        font-weight: 400;
-        color: #1a2c5e;
-        line-height: 20px;
+      .container {
+        overflow: hidden;
       }
-    }
 
-    &-family {
-      margin: 24px auto 0;
-      width: 313px;
-      height: 68px;
-    }
-
-    &-text {
-      padding: 16px;
-      margin: 0 auto;
-      width: 311px;
-      background: #fff5f6;
-      border-radius: 10px 10px 10px 10px;
-
-      .text {
+      &-time {
         display: flex;
-        justify-content: space-between;
+        align-items: center;
+        margin: 20px auto 0;
+        width: 311px;
 
-        div {
-          margin-top: 7px;
-          width: 6px;
-          height: 6px;
-          background: #e42f37;
-          border-radius: 50%;
+        &-logo {
+          margin: 3px;
+          width: 20px;
+          height: 20px;
+          object-fit: contain;
         }
 
-        p {
-          width: 265px;
+        &-text {
+          height: 16px;
+          font-size: 16px;
+          font-family:
+            PingFang SC-Regular,
+            PingFang SC;
+          font-weight: 400;
+          color: #333333;
+          line-height: 16px;
+          white-space: nowrap;
+        }
+      }
+
+      &-name {
+        margin: 20px auto 0;
+        width: 311px;
+        height: 68px;
+        object-fit: contain;
+      }
+
+      &-content {
+        padding: 16px 0 16px 8px;
+        margin: 0 auto;
+        width: 311px;
+        background: #ecf9ff;
+        border-radius: 0 0 9px 9px;
+
+        &-images {
+          display: flex;
+          flex-wrap: wrap;
+
+          img {
+            margin-left: 8px;
+            margin-bottom: 8px;
+            width: 88px;
+            height: 88px;
+            object-fit: cover;
+            border-radius: 9px;
+          }
+
+          img:nth-last-child(-n + 3) {
+            margin-bottom: 0;
+          }
+        }
+
+        &-text {
+          margin-left: 8px;
+          width: 279px;
           font-size: 14px;
           font-family:
             PingFang SC-Regular,
@@ -483,10 +589,56 @@ function getFieldLogo(title: string) {
           color: #1a2c5e;
           line-height: 20px;
         }
+
+        &-video {
+          display: block;
+          margin-left: 8px;
+          width: 279px;
+          border-radius: 10px;
+        }
+
+        .ability-content-video + .ability-content-text {
+          margin-top: 16px;
+        }
+
+        .ability-content-images + .ability-content-text {
+          margin-top: 16px;
+        }
       }
 
-      .text + .text {
-        margin-top: 10px;
+      &-family {
+        margin: 0 auto 20px;
+        padding: 16px 16px 16px 30px;
+        width: 311px;
+        background: #fff5f6;
+        border-radius: 0 0 10px 10px;
+
+        &-item {
+          position: relative;
+          width: 265px;
+          font-size: 14px;
+          font-family:
+            PingFang SC-Regular,
+            PingFang SC;
+          font-weight: 400;
+          color: #1a2c5e;
+          line-height: 20px;
+
+          &::before {
+            content: "";
+            position: absolute;
+            left: -14px;
+            top: 7px;
+            width: 6px;
+            height: 6px;
+            background: #e42f37;
+            border-radius: 50%;
+          }
+        }
+
+        .ability-family-item + .ability-family-item {
+          margin-top: 10px;
+        }
       }
     }
   }

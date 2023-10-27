@@ -2,12 +2,14 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import {
   defaultBabyDetail,
+  defaultSemesterReport,
   defaultSingleRecord,
   IBabies,
   IBabyDetail,
   IBabyRecord,
   IDomainDetail,
   IRecordData,
+  ISemesterReport,
   ISingleRecord,
 } from "@/types/customize.d";
 import {
@@ -16,13 +18,15 @@ import {
   getCustomizeSemesterBabies,
   getCustomizeSingleRecord,
   getDomainListRequest,
+  getSemesterRecordRequest,
   joinSemesterReportRequest,
+  sendSemesterRecordRequest,
+  sendSingleRecordRequest,
 } from "@/api/customize.ts";
 import { showToast } from "vant";
 
 export default defineStore("customize", () => {
   const singleRecord = ref<ISingleRecord>(defaultSingleRecord());
-  const isSendToParent = ref<boolean>(false);
   const recordData = ref<IRecordData>({
     className: "",
     totalBaby: 0,
@@ -35,6 +39,7 @@ export default defineStore("customize", () => {
   const babyRecordTotal = ref<number>(-1);
   const babyDetail = ref<IBabyDetail>(defaultBabyDetail());
   const domainList = ref<IDomainDetail[]>([]);
+  const semesterReport = ref<ISemesterReport>(defaultSemesterReport());
 
   async function getSingleRecord(babyId: string, id: string) {
     const { status, data } = await getCustomizeSingleRecord(babyId, id);
@@ -108,15 +113,50 @@ export default defineStore("customize", () => {
       });
     }
   }
+  async function getSemesterRecord(params: {
+    babyId: string;
+    classId: string;
+    classLevelCode: string;
+    semesterType: string;
+  }) {
+    const { status, data } = await getSemesterRecordRequest(params);
+    if (status === 200) {
+      semesterReport.value = data;
+    }
+  }
+  async function sendSingleRecord(params: {
+    babyId: string;
+    id: string;
+    recordType: string;
+  }) {
+    const { status } = await sendSingleRecordRequest(params);
+    if (status === 200) {
+      showToast("发送成功");
+      singleRecord.value.sendReport = 1;
+    }
+  }
+  async function sendSemesterRecord(params: {
+    babyId: string;
+    classId: string;
+    classLevelCode: string;
+    semesterType: string;
+    recordType: string;
+  }) {
+    const { status } = await sendSemesterRecordRequest(params);
+    if (status === 200) {
+      showToast("发送成功");
+      semesterReport.value.sendReport = 1;
+    }
+  }
   return {
     singleRecord,
-    isSendToParent,
     recordData,
     babyList,
     babyRecordTotal,
     babyRecordList,
     babyDetail,
     domainList,
+    semesterReport,
 
     getSingleRecord,
     sendToParent,
@@ -125,5 +165,8 @@ export default defineStore("customize", () => {
     getBabyRecord,
     getDomainList,
     joinSemesterReport,
+    getSemesterRecord,
+    sendSingleRecord,
+    sendSemesterRecord,
   };
 });

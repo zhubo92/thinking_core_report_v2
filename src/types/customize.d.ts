@@ -124,3 +124,52 @@ export interface IDomainDetail {
   domainAbilityName: string;
   iconUrl: string;
 }
+
+interface IDomainAbilityName {
+  domainName: string;
+  abilityNameList: string[];
+}
+
+interface IDomainData {
+  domainName: string;
+  recordList: {
+    recordDate: string;
+    abilityName: string;
+    abilityIconUrl: string;
+    story: IStory;
+    education: string;
+  }[];
+}
+export interface ISemesterReport {
+  classId: string;
+  classLevelCode: -1 | 0 | 1 | 2;
+  semesterType: 0 | 1;
+  babyId: string;
+  sendReport: 0 | 1;
+  schoolName: string;
+  className: string;
+  babyName: string;
+  babyHeadImg: string;
+  startDate: string;
+  endDate: string;
+  domainAbilityNameList: IDomainAbilityName[];
+  domainDataList: IDomainData[];
+}
+
+export function defaultSemesterReport(): ISemesterReport {
+  return {
+    classId: "",
+    classLevelCode: -1,
+    semesterType: 0,
+    babyId: "",
+    sendReport: 0,
+    schoolName: "",
+    className: "",
+    babyName: "",
+    babyHeadImg: "",
+    startDate: "",
+    endDate: "",
+    domainAbilityNameList: [],
+    domainDataList: [],
+  };
+}

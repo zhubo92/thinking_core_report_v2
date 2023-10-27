@@ -6,6 +6,7 @@ import {
   IBabyDetail,
   IBabyRecord,
   IDomainDetail,
+  ISemesterReport,
 } from "@/types/customize.d";
 
 /**
@@ -81,6 +82,51 @@ export function joinSemesterReportRequest(data: { id: string; state: 0 | 1 }) {
   return request<string>({
     url: `/teach/thought/customize/valuation/join/semester`,
     method: "PUT",
+    data,
+  });
+}
+/**
+ * 报告-行为记录综合测评报告数据查询
+ */
+export function getSemesterRecordRequest(data: {
+  babyId: string;
+  classId: string;
+  classLevelCode: string;
+  semesterType: string;
+}) {
+  return request<ISemesterReport>({
+    url: `/teach/thought/customize/valuation/report/semester/record`,
+    method: "POST",
+    data,
+  });
+}
+/**
+ * 向家长发送单次测评报告
+ */
+export function sendSingleRecordRequest(data: {
+  babyId: string;
+  id: string;
+  recordType: string;
+}) {
+  return request<string>({
+    url: `/teach/thought/customize/valuation/send/single`,
+    method: "POST",
+    data,
+  });
+}
+/**
+ * 向家长发送综合测评报告
+ */
+export function sendSemesterRecordRequest(data: {
+  babyId: string;
+  classId: string;
+  classLevelCode: string;
+  semesterType: string;
+  recordType: string;
+}) {
+  return request<string>({
+    url: `/teach/thought/customize/valuation/send/semester`,
+    method: "POST",
     data,
   });
 }
