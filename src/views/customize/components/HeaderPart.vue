@@ -5,6 +5,7 @@ import { storeToRefs } from "pinia";
 const customizeStore = useCustomizeStore();
 const { singleRecord } = storeToRefs(customizeStore);
 
+const props = defineProps(["isParent"]);
 const emit = defineEmits(["send"]);
 </script>
 
@@ -14,7 +15,7 @@ const emit = defineEmits(["send"]);
     <div class="header-back" @click="returnAppPage">
       <img :src="getImageUrl('return_button')" alt="" class="header-back-img" />
     </div>
-    <div v-if="true" class="header-send" @click="emit('send')">
+    <div v-if="!props.isParent" class="header-send" @click="emit('send')">
       <div class="header-send-btn flex-center">
         {{ singleRecord.sendReport ? "已发送" : "发送家长" }}
       </div>

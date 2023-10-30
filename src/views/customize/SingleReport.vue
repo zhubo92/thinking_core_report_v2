@@ -7,7 +7,7 @@ import { storeToRefs } from "pinia";
 import { IAbility } from "@/types/customize.d";
 import { computed, onMounted } from "vue";
 
-const { b: babyId, i: id } = useRoute().query;
+const { b: babyId, i: id, p: isParent } = useRoute().query;
 const customizeStore = useCustomizeStore();
 
 const { singleRecord } = storeToRefs(customizeStore);
@@ -44,6 +44,7 @@ function formatNames(names: string[]) {
 }
 
 function send() {
+  if (singleRecord.value.sendReport) return;
   if (typeof babyId === "string" && typeof id === "string")
     sendSingleRecord({
       babyId,
@@ -66,7 +67,7 @@ onMounted(async () => {
 
 <template>
   <div class="single-report">
-    <HeaderPart @send="send" />
+    <HeaderPart :isParent="isParent" @send="send" />
 
     <div class="sr">
       <div class="sr-top">

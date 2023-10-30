@@ -5,7 +5,15 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/customize/GrowthRecord",
+      redirect: "/demo",
+    },
+    {
+      path: "/demo",
+      name: "demo",
+      component: () => import("@/views/demo/DemoView.vue"),
+      meta: {
+        title: "测试",
+      },
     },
     {
       path: "/report",

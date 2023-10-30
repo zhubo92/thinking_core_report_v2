@@ -13,6 +13,7 @@ const {
   // g: gameType,
   s: semesterType,
   // r: recordType,
+  p: isParent,
 } = useRoute().query;
 const customizeStore = useCustomizeStore();
 
@@ -36,6 +37,7 @@ function formatFamily(name: string) {
 }
 
 function send() {
+  if (semesterReport.value.sendReport) return;
   if (
     typeof babyId === "string" &&
     typeof classId === "string" &&
@@ -67,7 +69,7 @@ onMounted(async () => {
     <div class="rd-back" @click="returnAppPage">
       <img :src="getImageUrl('back_solid')" alt="" class="rd-back-img" />
     </div>
-    <div class="rd-send" @click="send">
+    <div v-if="!isParent" class="rd-send" @click="send">
       <div class="rd-send-btn flex-center">
         {{ semesterReport.sendReport ? "已发送" : "发送家长" }}
       </div>
