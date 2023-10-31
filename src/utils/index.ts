@@ -54,6 +54,16 @@ export function noticeApp(babyId: string, recordId: string) {
 }
 
 /**
+ * 字符串限制长度
+ */
+export function limitLength(val: any, limitLength = 3) {
+  if (typeof val === "string" && val.length > limitLength) {
+    return val.substr(0, limitLength) + "...";
+  }
+  return val;
+}
+
+/**
  * 图片全屏预览
  */
 export function imagePreview(

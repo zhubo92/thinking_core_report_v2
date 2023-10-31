@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getImageUrl, imagePreview, returnAppPage } from "@/utils";
+import { getImageUrl, imagePreview, limitLength, returnAppPage } from "@/utils";
 import { useRoute } from "vue-router";
 import { useCustomizeStore } from "@/store";
 import { storeToRefs } from "pinia";
@@ -84,7 +84,7 @@ onMounted(async () => {
         class="rd-info-name"
         :style="{ backgroundImage: `url(${getImageUrl('detail_name')})` }"
       >
-        {{ semesterReport.babyName }}
+        {{ limitLength(semesterReport.babyName) }}
       </div>
       <div class="rd-info-garden">{{ semesterReport.schoolName }}</div>
       <div class="rd-info-class">

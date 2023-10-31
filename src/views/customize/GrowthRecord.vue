@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { returnAppPage, getAppToken, getImageUrl, imagePreview } from "@/utils";
+import {
+  returnAppPage,
+  getAppToken,
+  getImageUrl,
+  imagePreview,
+  limitLength,
+} from "@/utils";
 import { onMounted, onUnmounted, ref } from "vue";
 import { showToast } from "vant";
 import AddReport from "@/views/customize/components/AddReport.vue";
@@ -149,6 +155,11 @@ function goSingle(item: IBabyRecord) {
 
 onMounted(async () => {
   babyRecordList.value = [];
+
+  // setToken(
+  //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNjM0MDI3NDA1MTcxNTYwNDQ5IiwiZXhwIjoxNjk4NjU0MTM4fQ.UJTOrAyQ2gSAxAm1oSNAqJLfrkNjOroqTHY4zCnq8Vc",
+  // );
+
   await getAppToken();
 
   if (
@@ -206,7 +217,7 @@ onUnmounted(() => {
         class="gr-info-name"
         :style="{ backgroundImage: `url(${getImageUrl('detail_name')})` }"
       >
-        {{ babyDetail.babyName }}
+        {{ limitLength(babyDetail.babyName) }}
       </div>
       <div class="gr-info-level">
         {{ formatClassLevelCode(classLevelCode)
@@ -224,7 +235,11 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <img :src="getImageUrl('class_logo')" alt="" class="gr-logo" />
+    <!--<img :src="getImageUrl('class_logo')" alt="" class="gr-logo" />-->
+    <div
+      class="gr-logo"
+      :style="{ backgroundImage: `url(${getImageUrl('class_logo')})` }"
+    ></div>
 
     <div class="gr-class">
       <div
@@ -340,6 +355,7 @@ onUnmounted(() => {
   </div>
 
   <AddReport :show="show" :is-know="true" @close="show = false" />
+
   <ConfirmJoin
     :show="showConfirm"
     @close="showConfirm = false"
@@ -459,10 +475,13 @@ onUnmounted(() => {
   &-logo {
     position: absolute;
     top: 207px;
-    right: -2px;
+    right: 0;
     z-index: 2;
     width: 58px;
     height: 72px;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: auto 100%;
   }
 
   &-class {

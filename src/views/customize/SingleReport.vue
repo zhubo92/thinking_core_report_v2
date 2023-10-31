@@ -364,7 +364,7 @@ onMounted(async () => {
       margin: 32px auto 0;
 
       &-title {
-        padding: 7px 28px;
+        padding: 7px 28px 5px;
         background: #89c6ff;
         font-size: 18px;
         font-family:
