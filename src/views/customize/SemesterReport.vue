@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getImageUrl, imagePreview, limitLength, returnAppPage } from "@/utils";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useCustomizeStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
@@ -14,7 +14,9 @@ const {
   s: semesterType,
   // r: recordType,
   p: isParent,
+  o: isMyRoute,
 } = useRoute().query;
+const router = useRouter();
 const customizeStore = useCustomizeStore();
 
 const { semesterReport } = storeToRefs(customizeStore);
@@ -53,6 +55,10 @@ function send() {
     });
 }
 
+function back() {
+  isMyRoute === "1" ? router.go(-1) : returnAppPage();
+}
+
 onMounted(async () => {
   if (
     typeof babyId === "string" &&
@@ -66,7 +72,7 @@ onMounted(async () => {
 
 <template>
   <div class="report-detail rd">
-    <div class="rd-back" @click="returnAppPage">
+    <div class="rd-back" @click="back">
       <img :src="getImageUrl('back_solid')" alt="" class="rd-back-img" />
     </div>
     <div v-if="!isParent" class="rd-send" @click="send">

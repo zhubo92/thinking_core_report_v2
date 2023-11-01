@@ -7,7 +7,7 @@ import { storeToRefs } from "pinia";
 import { IAbility } from "@/types/customize.d";
 import { computed, onMounted } from "vue";
 
-const { b: babyId, i: id, p: isParent } = useRoute().query;
+const { b: babyId, i: id, p: isParent, o: isMyRoute } = useRoute().query;
 const customizeStore = useCustomizeStore();
 
 const { singleRecord } = storeToRefs(customizeStore);
@@ -67,7 +67,7 @@ onMounted(async () => {
 
 <template>
   <div class="single-report">
-    <HeaderPart :isParent="isParent" @send="send" />
+    <HeaderPart :isParent="isParent" :isMyRoute="isMyRoute" @send="send" />
 
     <div class="sr">
       <div class="sr-top">

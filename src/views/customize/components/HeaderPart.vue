@@ -2,17 +2,24 @@
 import { getImageUrl, returnAppPage } from "@/utils/index.js";
 import { useCustomizeStore } from "@/store";
 import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
 const customizeStore = useCustomizeStore();
 const { singleRecord } = storeToRefs(customizeStore);
 
-const props = defineProps(["isParent"]);
+const props = defineProps(["isParent", "isMyRoute"]);
 const emit = defineEmits(["send"]);
+
+const router = useRouter();
+
+function back() {
+  props.isMyRoute === "1" ? router.go(-1) : returnAppPage();
+}
 </script>
 
 <template>
   <div class="top-safety-distance"></div>
   <div class="header flex-center">
-    <div class="header-back" @click="returnAppPage">
+    <div class="header-back" @click="back">
       <img :src="getImageUrl('return_button')" alt="" class="header-back-img" />
     </div>
     <div v-if="!props.isParent" class="header-send" @click="emit('send')">

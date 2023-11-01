@@ -15,6 +15,7 @@ const {
   g: gameType,
   r: recordType,
   s: semesterType,
+  o: isMyRoute,
 } = useRoute().query;
 const customizeStore = useCustomizeStore();
 
@@ -35,6 +36,7 @@ function goAdd() {
       l: classLevelCode,
       g: gameType,
       s: semesterType,
+      o: 1,
     },
   });
 }
@@ -54,6 +56,7 @@ function goDetail(item: IBabies) {
         // g: gameType,
         s: semesterType,
         // r: 1,
+        o: 1,
       },
     });
   }
@@ -69,6 +72,10 @@ function formatTeacherNames(names: string[]) {
     str += `${name}`;
   });
   return str;
+}
+
+function back() {
+  isMyRoute === "1" ? router.go(-1) : returnAppPage();
 }
 
 onMounted(async () => {
@@ -100,7 +107,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="back" @click="returnAppPage">
+  <div class="back" @click="back">
     <img :src="getImageUrl('back_button')" alt="" class="back-img" />
   </div>
   <div

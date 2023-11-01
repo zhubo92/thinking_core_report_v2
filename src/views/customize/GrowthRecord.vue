@@ -15,6 +15,7 @@ import { useCustomizeStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { formatClassLevelCode, formatSemesterType } from "@/utils/filter.ts";
 import { IBabyRecord } from "@/types/customize";
+
 interface IType {
   id: number;
   name: string;
@@ -32,6 +33,7 @@ const {
   l: classLevelCode,
   g: gameType,
   s: semesterType,
+  o: isMyRoute,
 } = useRoute().query;
 
 const customizeStore = useCustomizeStore();
@@ -87,6 +89,7 @@ function lookReport() {
         // g: gameType,
         s: semesterType,
         // r: 1,
+        o: 1,
       },
     });
   } else {
@@ -149,8 +152,13 @@ function goSingle(item: IBabyRecord) {
     query: {
       b: babyId,
       i: item.id,
+      o: 1,
     },
   });
+}
+
+function back() {
+  isMyRoute === "1" ? router.go(-1) : returnAppPage();
 }
 
 onMounted(async () => {
@@ -201,7 +209,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="back" @click="returnAppPage">
+  <div class="back" @click="back">
     <img :src="getImageUrl('back_solid')" alt="" class="back-img" />
   </div>
   <div class="growth-record gr">
@@ -575,14 +583,15 @@ onUnmounted(() => {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 16px;
+        margin: 16px 0 0 13px;
+        width: 315px;
 
         &-left {
           display: flex;
           align-items: center;
 
           img {
-            margin-left: 16px;
+            //margin-left: 16px;
             margin-right: 6px;
             width: 20px;
             height: 20px;
@@ -603,10 +612,10 @@ onUnmounted(() => {
         }
 
         &-right {
-          margin-right: 10px;
+          //margin-right: 10px;
           padding: 9px 10px;
           background: #eef3fd;
-          border-radius: 15px;
+          border-radius: 20px;
 
           img {
             margin-right: 4px;
