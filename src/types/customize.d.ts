@@ -14,9 +14,18 @@ interface IDescription {
   education: string;
 }
 
+interface IDescriptionExtra {
+  behave: string;
+  education: string;
+  example: string;
+  growth: string;
+  tactics: string;
+}
+
 export interface IAbility {
   abilityName: string;
   description: IDescription;
+  descriptionExtra: null | IDescriptionExtra;
 }
 
 interface IDomain {

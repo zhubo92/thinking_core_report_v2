@@ -179,18 +179,27 @@ onMounted(async () => {
           />
           <div class="title">能力名称：{{ ability.abilityName }}</div>
           <img :src="getImageUrl('desc_name_01')" alt="" class="name" />
-          <div class="desc">{{ ability.description.growth }}</div>
+          <div class="desc">
+            {{ ability.descriptionExtra?.growth || ability.description.growth }}
+          </div>
           <img :src="getImageUrl('desc_name_02')" alt="" class="name" />
-          <div class="desc green">{{ ability.description.behave }}</div>
+          <div class="desc green">
+            {{ ability.descriptionExtra?.behave || ability.description.behave }}
+          </div>
           <img :src="getImageUrl('family_title')" alt="" class="name" />
           <div class="strategy">
             <div class="strategy-title">一日活动</div>
             <div class="strategy-content">
-              {{ ability.description.tactics }}
+              {{
+                ability.descriptionExtra?.tactics || ability.description.tactics
+              }}
             </div>
             <div class="strategy-title">家园共育</div>
             <div class="strategy-content">
-              {{ ability.description.education }}
+              {{
+                ability.descriptionExtra?.education ||
+                ability.description.education
+              }}
             </div>
           </div>
         </div>
