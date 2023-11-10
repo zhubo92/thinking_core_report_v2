@@ -180,7 +180,7 @@ onMounted(async () => {
           <div class="title">能力名称：{{ ability.abilityName }}</div>
           <img :src="getImageUrl('desc_name_01')" alt="" class="name" />
           <div class="desc">
-            {{ ability.descriptionExtra?.growth || ability.description.growth }}
+            {{ ability.description.growth }}
           </div>
           <img :src="getImageUrl('desc_name_02')" alt="" class="name" />
           <div class="desc green">

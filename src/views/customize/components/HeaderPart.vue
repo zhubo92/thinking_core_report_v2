@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import { getImageUrl, returnAppPage } from "@/utils/index.js";
 import { useCustomizeStore } from "@/store";
-import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
+import { computed } from "vue";
+import { ISingleRecord } from "@/types/customize";
 const customizeStore = useCustomizeStore();
-const { singleRecord } = storeToRefs(customizeStore);
+// const { singleRecord } = storeToRefs(customizeStore);
+
+const router = useRouter();
 
 const props = defineProps(["isParent", "isMyRoute"]);
 const emit = defineEmits(["send"]);
 
-const router = useRouter();
+const singleRecord = computed<ISingleRecord>(() => {
+  return customizeStore.singleRecord;
+});
 
 function back() {
   props.isMyRoute === "1" ? router.go(-1) : returnAppPage();
