@@ -15,12 +15,10 @@ const babyInfo = ref<IBabyInfo>(props.value);
     class="baby-info bi"
     :style="{ backgroundImage: `url(${getImageUrl('baby_info_bgi')})` }"
   >
-    <img
-      v-if="babyInfo.headImg"
-      :src="babyInfo.headImg as string"
-      alt=""
+    <div
       class="bi-ava"
-    />
+      :style="{ backgroundImage: `url(${babyInfo.headImg})` }"
+    ></div>
     <div class="bi-info">
       <div class="bi-info-name">{{ babyInfo.babyName }}</div>
       <div class="bi-info-class">
@@ -47,7 +45,9 @@ const babyInfo = ref<IBabyInfo>(props.value);
     margin-right: 16px;
     width: 55px;
     height: 55px;
-    object-fit: cover;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
     border-radius: 50%;
   }
 
@@ -62,7 +62,7 @@ const babyInfo = ref<IBabyInfo>(props.value);
         PingFang SC;
       font-weight: 600;
       color: #2c1717;
-      line-height: 22px;
+      line-height: 25px;
       @include single-hide();
     }
 
@@ -75,7 +75,7 @@ const babyInfo = ref<IBabyInfo>(props.value);
         PingFang SC;
       font-weight: 400;
       color: #2c1717;
-      line-height: 17px;
+      line-height: 20px;
       opacity: 0.3962;
       @include single-hide();
     }

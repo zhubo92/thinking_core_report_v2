@@ -99,7 +99,7 @@ function lightImg(index: number) {
 }
 
 .cb {
-  margin: 30px auto 0;
+  margin: 30px auto 16px;
   padding-bottom: 24px;
   width: 343px;
   box-shadow: 0 1px 6px 0 rgba(42, 105, 253, 0.16);

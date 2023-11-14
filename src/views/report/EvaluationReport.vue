@@ -7,6 +7,7 @@ import { SwipeInstance, Swipe, SwipeItem } from "vant";
 import TurnPage from "@/views/report/components/TurnPage.vue";
 import CoverPage from "@/views/report/components/CoverPage.vue";
 import HeaderPart from "@/views/report/components/HeaderPart.vue";
+import Screenshot from "@/views/report/components/Screenshot.vue";
 
 const { babyId: _babyId, recordId: _recordId, type: _type } = useRoute().query;
 
@@ -18,7 +19,7 @@ const { getReport } = reportStore;
 
 const showCover = ref(false);
 const currentPage = ref<number>(1);
-const swipeRef = ref<SwipeInstance>();
+const swipeRef = ref<SwipeInstance | null>(null);
 
 const showDown = computed(() => currentPage.value < totalPage.value);
 const showUp = computed(() => currentPage.value > 1);
@@ -115,6 +116,8 @@ getReport();
       {{ currentPage }}/{{ totalPage }}
     </div>
   </div>
+
+  <Screenshot />
 </template>
 
 <style lang="scss" scoped>
@@ -126,6 +129,10 @@ getReport();
   height: 100vh;
   box-sizing: border-box;
   overflow: hidden;
+
+  &-item {
+    overflow: hidden;
+  }
 }
 
 .sp {
